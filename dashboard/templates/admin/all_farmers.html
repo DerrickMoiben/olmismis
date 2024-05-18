@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>All Farmers</h1>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th> Number</th>
+                        <th> Name</th>
+                        <th>Weight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for farmer in farmers %}
+                    <tr>
+                        <td>{{ farmer.id }}</td>
+                        <td>{{ farmer.name }}</td>
+                        <td>{{ farmer.phone }}</td>
+                        <td>{{ farmer.email }}</td>
+                        <td>{{ farmer.berry_weight }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div

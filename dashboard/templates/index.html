@@ -1,0 +1,75 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="static/css/landing.css"/>
+  <title>Olmismis farmers co-operative soceity</title>
+</head>
+
+<body>
+  <nav class="navbar">
+    <!-- LOGO - TEXT -->
+    <div class="logo">Olmismis</div>
+
+
+    <ul class="nav-links">
+
+      <!-- USING CHECKBOX HACK -->
+      <input type="checkbox" id="checkbox_toggle" />
+      <label for="checkbox_toggle" class="hamburger">&#9776;</label>
+
+      <!-- NAVIGATION MENUS -->
+      <div class="menu">
+
+        <li><a href="/">Home</a></li>
+        <li><a href="/dashboard/dashboard">Admin</a></li>
+        <li><a href="/">Farmer</a></li>
+        <li><a href="/">About</a></li>
+
+        <li class="services">
+          <a href="#services">Services</a>
+
+          <!-- DROPDOWN MENU -->
+          <ul class="dropdown">
+            <li><a href="/"> coffee pulping </a></li>
+            <li><a href="/">cofee grinding </a></li>
+            <li><a href="/"></a></li>
+            <li><a href="/"></a></li>
+            <li><a href="/"></a></li>
+          </ul>
+
+        </li>
+
+        <li><a href="/">Contact</a></li>
+      </div>
+    </ul>
+  </nav>
+  <section id="services">
+    <div class="container">
+      <h1>Our Services</h1>
+      <div class="card">
+        <h2>Coffee Pulping</h2>
+        <p>
+          We offer coffee pulping services to our members at a very affordable
+          price
+        </p>
+      </div>
+      <div class="card">
+        <img src="static/images/pulping.png" alt="coffee" />
+        <h2>Coffee Grinding</h2>
+        <p>
+          We offer coffee grinding services to our members at a very affordable
+          price
+        </p>
+      </div>
+      <div class="card">
+        <img src="static/images/gringing.png" alt="coffee" />
+      </div>
+    </div>
+</body>
+
+</html>
