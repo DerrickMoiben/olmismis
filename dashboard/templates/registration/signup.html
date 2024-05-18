@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <title>Signup</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/singup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
 </head>
 <body>
-    <div class="signup">
+    <div class="container">
         <h2>Signup</h2>
         <form method="POST" action="{% url 'signup' %}">
             {% csrf_token %}
@@ -17,7 +17,9 @@
             <input type="password" name="password" id="password" placeholder="Password" required>
             <label for="password2">Confirm Password</label>
             <input type="password" name="password2" id="password2" placeholder="Confirm Password" required>
-            <div style="text-align: center;"><button type="submit">Signup</button></div>
+            <div style="text-align: center;">
+                <button type="submit">Signup</button>
+            </div>
             <a href="{% url 'login' %}">Already have an Account? Login</a>
         </form>
     </div>
