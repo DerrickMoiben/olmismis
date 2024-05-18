@@ -4,7 +4,10 @@
 <h1>Admin Dashboard</h1>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    <label for="Farmer's name">Farmer's name</label>
+    <input type="text" name="farmer_name" id="farmer_name" placeholder="Farmer's name" required>
+    <label for="">coffe weight</label>
+    <input type="text" name="coffe_weight" id="coffe_weight" placeholder="coffe weight" required>
     <button type="submit">Submit</button>
 </form>
 <a href="{% url 'all-farmers' %}">All Farmers</a>
