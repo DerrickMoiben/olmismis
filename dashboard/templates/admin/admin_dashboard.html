@@ -1,15 +1,25 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+    {% block content %}
+    <h1>Admin Dashboard</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="farmer_name">Farmer's name</label>
+        <input type="text" name="farmer_name" id="farmer_name" placeholder="Farmer's name" required>
+        <label for="coffe_weight">Coffee weight</label>
+        <input type="text" name="coffe_weight" id="coffe_weight" placeholder="Coffee weight" required>
+        <button type="submit">Submit</button>
+    <a href="{% url 'all-farmers' %}">All Farmers</a>
+    <a href="{% url 'register-new-farmer' %}">Register New Farmer</a>
 
-{% block content %}
-<h1>Admin Dashboard</h1>
-  <form method="post">
-    {% csrf_token %}
-    <label for="Farmer's name">Farmer's name</label>
-    <input type="text" name="farmer_name" id="farmer_name" placeholder="Farmer's name" required>
-    <label for="">coffe weight</label>
-    <input type="text" name="coffe_weight" id="coffe_weight" placeholder="coffe weight" required>
-    <button type="submit">Submit</button>
-</form>
-<a href="{% url 'all-farmers' %}">All Farmers</a>
-<a href="{% url 'register-new-farmer' %}">Register New  Farmer</a>
-{% endblock %}
+    </form>
+    {% endblock %}
+</body>
+</html>

@@ -1,33 +1,27 @@
-{% extends 'base.html' %}
-
-{% block head %}
-    <!-- Add Bootstrap CSS link -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Load static files for custom styling -->
-{% endblock %}
-
-{% block content %}
-<div class="container">
-    <h1>Register New Farmer</h1>
-    <form method="post" class="custom-form">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-        </div>
-        <div class="form-group">
-            <label for="phone" class="form-label">Phone</label>
-            <input type="text" class="form-control" id="phone" name="phone" required>
-        </div>
-        <div class="form-group">
-            <label for="address" class="form-label">Address</label>
-            <textarea class="form-control" id="address" name="address" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="id_number" class="form-label">ID Number</label>
-            <input type="text" class="form-control" id="id_number" name="id_number" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
-</div>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register New Farmer</title>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Register New Farmer</h1>
+        <form method="post" class="custom-form">
+            {% csrf_token %}
+            <label for="name">Name</label>
+            <input type="text" name="name" class="form-control" required>
+            <label for="phone_number">Phone Number</label>
+            <input type="text" name="phone_number" class="form-control" required>
+            <label for="location">Location</label>
+            <input type="text" name="location" class="form-control" required>
+            <label for="id_number">Id Number</label>
+            <input type="text" name="id_number" class="form-control" required>
+            <button type="submit" class="btn">Register</button>
+        </form>
+    </div>
+</body>
+</html>

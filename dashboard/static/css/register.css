@@ -1,0 +1,44 @@
+.container {
+    width: 400px;
+    margin: 50px auto;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+h1 {
+    text-align: center;
+    color: #4CAF50;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+button[type="submit"], .btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+button[type="submit"]:hover, .btn:hover {
+    background-color: #45a049;
+}
