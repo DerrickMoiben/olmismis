@@ -1,25 +1,14 @@
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h1>All Farmers</h1>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th> Number</th>
-                        <th> Name</th>
-                        <th>Weight</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for farmer in dashboard %}
-                    <tr>
-                        <td>{{ farmer.name }}</td>
-                        <td>{{ farmer.phone }}</td>
-                        <td>{{ farmer.location }}</td>
-                        <td>{{ farmer.id }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Farmers</title>
+</head>
+<body>
+    <h1>All Farmers</h1>
+    <ul>
+        {% for farmer in Farmers %}
+            <li>{{ farmer.name }} - {{ farmer.berry_weight }} kg</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

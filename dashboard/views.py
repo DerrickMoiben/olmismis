@@ -51,8 +51,8 @@ def user_logout(request):
 
 def admin_dashboard(request):
     if request.method == 'POST':
-       form = FarmerWeightForm(request.POST)
-       if form.is_valid():
+        form = FarmerWeightForm(request.POST)
+        if form.is_valid():
             farmer_name = form.cleaned_data.get('Farmer')
             berry_weight = form.cleaned_data.get('berry_weight')
             try:
@@ -61,28 +61,25 @@ def admin_dashboard(request):
             except Farmer.DoesNotExist:
                 farmer = Farmer(name=farmer_name, berry_weight=berry_weight)
             except MultipleObjectsReturned:
-                # If multiple farmers with the same name are found,
-                # handle the situation appropriately, such as logging an error
-                # or selecting one of the farmers to use
-                # For now, let's just log the error
                 print("Multiple farmers with the same name:", farmer_name)
             farmer.save()
             return redirect('admin-dashboard')
     else:
         form = FarmerWeightForm()
     return render(request, 'admin/admin_dashboard.html', {'form': form})
+
+@csrf_protect
 def register_new_farmer(request):
     if request.method == 'POST':
         form = FarmerForm(request.POST)
         if form.is_valid():
             farmer = form.save(commit=False)
-            farmer_name = form.cleaned_data.get('name')
             farmer.save()
             return redirect('admin-dashboard')
-        
     else:
-        form = FarmerForm
+        form = FarmerForm()
     return render(request, 'admin/register_farmer.html', {'form': form})
+
 def all_farmers(request):
     farmers = Farmer.objects.all()
     return render(request, 'admin/all_farmers.html', {'farmers': farmers})

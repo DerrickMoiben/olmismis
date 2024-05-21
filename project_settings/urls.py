@@ -22,5 +22,4 @@ urlpatterns = [
     path('', views.land_page, name='land_page'),
     path('admin/', admin.site.urls),
     path('dashboard/', include('dashboard.urls')),
-    path('farmers/', include('farmers.urls')),
 ]
