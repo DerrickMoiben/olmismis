@@ -59,3 +59,11 @@
     color: #45a049;
     text-decoration: underline;
 }
+
+@media only screen and (max-width: 650px) {
+    .container {
+        width: 90%;
+        margin: 50px auto;
+    }
+    
+}
