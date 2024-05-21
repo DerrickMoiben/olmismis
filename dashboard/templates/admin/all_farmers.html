@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>All Farmers</title>
 </head>
 <body>
     <h1>All Farmers</h1>
-    <ul>
-        {% for farmer in Farmers %}
-            <li>{{ farmer.name }} - {{ farmer.berry_weight }} kg</li>
-        {% endfor %}
-    </ul>
+    {% if farmers %}
+        <ul>
+            {% for farmer in farmers %}
+                <li>
+                    <strong>Name:</strong> {{ farmer.name }}<br>
+                    <strong>Phone:</strong> {{ farmer.phone }}<br>
+                    <strong>Address:</strong> {{ farmer.address }}<br>
+                    <strong>ID Number:</strong> {{ farmer.id_number }}<br>
+                    <strong>Berry Weight:</strong> {{ farmer.berry_weight }} kg<br>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No farmers found.</p>
+    {% endif %}
 </body>
 </html>
