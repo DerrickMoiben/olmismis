@@ -11,13 +11,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for farmer in farmers %}
+                    {% for farmer in dashboard %}
                     <tr>
-                        <td>{{ farmer.id }}</td>
                         <td>{{ farmer.name }}</td>
                         <td>{{ farmer.phone }}</td>
-                        <td>{{ farmer.email }}</td>
-                        <td>{{ farmer.berry_weight }}</td>
+                        <td>{{ farmer.location }}</td>
+                        <td>{{ farmer.id }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

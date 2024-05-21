@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from .forms import SignupForm, LoginForm, FarmerForm, FarmerWeightForm
 from django.contrib.auth.models import User
-from farmers.models import Farmer
+from .models import Farmer
 from django.core.exceptions import MultipleObjectsReturned
 import logging
 from django.views.generic import TemplateView
