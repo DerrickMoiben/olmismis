@@ -1,25 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Farmer's Coffee Weight</title>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
 </head>
 <body>
-    {% block content %}
-    <h1>Admin Dashboard</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="farmer_name">Farmer's name</label>
-        <input type="text" name="farmer_name" id="farmer_name" placeholder="Farmer's name" required>
-        <label for="coffe_weight">Coffee weight</label>
-        <input type="text" name="coffe_weight" id="coffe_weight" placeholder="Coffee weight" required>
-        <button type="submit">Submit</button>
-    <a href="{% url 'all-farmers' %}">All Farmers</a>
-    <a href="{% url 'register-new-farmer' %}">Register New Farmer</a>
-
-    </form>
-    {% endblock %}
+    <div class="container">
+        <h1>Enter farmer Details</h1>
+        <form method="post" class="custom-form">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p>{{ field }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Update</button>
+        <a href="{% url 'all-farmers' %}" class="btn btn-secondary">All Farmers</a>
+        <a href="{% url 'register-new-farmer' %}" class="btn btn-secondary">Register New Farmer</a>
+        </form>
+    </div>
 </body>
 </html>

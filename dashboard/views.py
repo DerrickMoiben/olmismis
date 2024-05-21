@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from .forms import SignupForm, LoginForm, FarmerForm, FarmerWeightForm
+from .forms import SignupForm, LoginForm, RegisterForm, FarmerWeightForm
 from django.contrib.auth.models import User
 from .models import Farmer
 from django.core.exceptions import MultipleObjectsReturned
@@ -49,20 +49,26 @@ def user_logout(request):
     logout(request)
     return redirect('login')
 
+@csrf_protect
 def admin_dashboard(request):
     if request.method == 'POST':
         form = FarmerWeightForm(request.POST)
         if form.is_valid():
             farmer_name = form.cleaned_data.get('Farmer')
             berry_weight = form.cleaned_data.get('berry_weight')
+            #retrieve the farmer instance
             try:
                 farmer = Farmer.objects.get(name=farmer_name)
-                farmer.berry_weight = berry_weight
             except Farmer.DoesNotExist:
-                farmer = Farmer(name=farmer_name, berry_weight=berry_weight)
-            except MultipleObjectsReturned:
-                print("Multiple farmers with the same name:", farmer_name)
+                print(form.errors)
+                form.add_error('Farmer_name', 'Farmer does not exist')
+                logger.error(f"Farmer {farmer_name} does not exist")
+                return render(request, 'admin/admin_dashboard.html', {'form': form})
+
+            #update the farmer berry weight and save
+            farmer.berry_weight = berry_weight
             farmer.save()
+            Farmer.objects.all().refresh_from_db() # Refresh the database
             return redirect('admin-dashboard')
     else:
         form = FarmerWeightForm()
@@ -71,13 +77,13 @@ def admin_dashboard(request):
 @csrf_protect
 def register_new_farmer(request):
     if request.method == 'POST':
-        form = FarmerForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             farmer = form.save(commit=False)
             farmer.save()
             return redirect('admin-dashboard')
     else:
-        form = FarmerForm()
+        form = RegisterForm()
     return render(request, 'admin/register_farmer.html', {'form': form})
 
 def all_farmers(request):

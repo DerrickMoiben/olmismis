@@ -15,13 +15,13 @@ class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 
-class FarmerForm(forms.ModelForm):
+class RegisterForm(forms.ModelForm):
     class Meta:
         model = Farmer
-        fields = ['name', 'phone', 'address', 'id_number', 'berry_weight']
+        fields = ['name', 'phone', 'location', 'id_number']
 
 class FarmerWeightForm(forms.Form):
-    Farmer = forms.CharField(label="Farmer's name", max_length=100)
+    Farmer_name = forms.CharField(label="Farmer's name", max_length=100)
     berry_weight = forms.FloatField(label="Coffe berries weight (kg)")
 
     def clean_Farmer(self):
