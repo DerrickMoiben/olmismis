@@ -16,6 +16,13 @@
             <button type="submit" class="btn btn-primary">Register</button>
             <a href="{% url 'admin-dashboard' %}">Back</a>
         </form>
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 </body>
 </html>
