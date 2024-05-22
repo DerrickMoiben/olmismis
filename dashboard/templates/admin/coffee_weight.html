@@ -1,14 +1,16 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coffe Weight</title>
+    <title>Coffee Weight</title>
+    <link rel="stylesheet" href="{% static 'css/weight.css' %}">
 </head>
 <body>
     <h1>Enter coffee weight for {{ farmer.name }}</h1>
-    <p>Total Cofee weight: {{total_coffee_weight }}</p>
-    <form method="post">
+    <p>Total Coffee weight: {{ total_coffee_weight }}</p>
+    <form method="post" class="coffee-form">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Update</button>
@@ -20,6 +22,6 @@
             {% endfor %}
         </ul>   
     {% endif %}
-    <a href="{% url 'admin-dashboard' %}"><button>back</button></a>
+    <a href="{% url 'admin-dashboard' %}" class="back-link">Back</a>
 </body>
 </html>
