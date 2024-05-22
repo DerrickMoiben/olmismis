@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="static/css/landing.css"/>
   <title>Olmismis farmers co-operative soceity</title>
+  <link rel="stylesheet" href="../static/css/main.css">
 </head>
 
 <body>
@@ -48,28 +49,70 @@
       </div>
     </ul>
   </nav>
-  <section id="services">
-    <div class="container">
-      <h1>Our Services</h1>
-      <div class="card">
-        <h2>Coffee Pulping</h2>
-        <p>
-          We offer coffee pulping services to our members at a very affordable
-          price
-        </p>
+  <!-- End of the navbar -->
+
+  <!-- Start of the slideshow -->
+  <section style="display: flex; justify-content: center;">
+    <div class="carousel">
+      <div class="slide">
+          <img src="../static/images/dashboard.jpg" alt="" width="100%">
+          <div class="text">Caption Text1</div>
       </div>
-      <div class="card">
-        <img src="static/images/pulping.png" alt="coffee" />
-        <h2>Coffee Grinding</h2>
-        <p>
-          We offer coffee grinding services to our members at a very affordable
-          price
-        </p>
+      <div class="slide">
+          <img src="../static/images/coffee.png" alt="" width="100%">
+          <div class="text">Caption Text2</div>
       </div>
-      <div class="card">
-        <img src="static/images/gringing.png" alt="coffee" />
+      <div class="slide">
+          <img src="../static/images/landing.png" alt="" width="100%">
+          <div class="text">Caption Text3</div>
+      </div>
+
+      <a href="javascript:void(0)" class="prev" onclick="plusSlides(-1)">&#10094</a>
+      <a href="javascript:void(0)" class="next" onclick="plusSlides(1)">&#10095</a>
+
+      <div class="dot-box">
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+      </div>
+  </div>
+  </section>
+
+  <h3>Founding Fatheres</h3>
+
+  <section class="row">
+    <div class="card-box">
+      <div class="card-row">
+
+        <div class="card col-6">
+          <img src="../static/images/avatar1.png" alt="Wesley Too">
+          <div class="overlay"></div>
+          <div class="name"></div>
+        </div>
+
+        <div class="card col-6">
+          <img src="../static/images/avatar2.png" alt="James Meli">
+          <div class="overlay"></div>
+          <div class="name"></div>
+
+      </div>
+
+      <div class="card-row">
+        <div class="card col-6">
+          <img src="../static/images/avatar3.png" alt="Sammy Cheruiyot">
+          <div class="overlay"></div>
+          <div class="name"></div>
+        </div>
+        <div class="card col-6">
+          <img src="../static/images/avatar5.png" alt="Paul Too">
+          <div class="overlay"></div>
+          <div class="name"></div>
+        </div>
       </div>
     </div>
+  </section>
+
+  <script src="../static/javascript/main.js"></script>
 </body>
 
 </html>

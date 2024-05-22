@@ -61,11 +61,13 @@ def register_new_farmer(request):
             farmer.save()
             messages.success(request, 'Farmer registered successfully.')
             return redirect('enter-weight', farmer_id=farmer.id)
+        else:
+            messages.error(request, '')
     else:
         form = FarmerForm()
     return render(request, 'admin/register_farmer.html', {'form': form})
 
-def enter_weight(request, farmer_id):
+#def enter_weight(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
     
     try:
@@ -94,31 +96,8 @@ def enter_weight(request, farmer_id):
         'form': form
     })
   
+
 #def admin_dashboard(request):
-    farmers = Farmer.objects.all()
-    
-    if request.method == 'POST':
-        form = CoffeeBerriesForm(request.POST)
-        if form.is_valid():
-            farmer_name = form.cleaned_data['farmer_name']
-            weight = form.cleaned_data['weight']
-            
-            farmer = Farmer.objects.filter(name=farmer_name).first()
-            if farmer:
-                field, created = Field.objects.get_or_create(farmer=farmer, field_name="Default Field Name")
-                coffee_berrie, created = CoffeeBerries.objects.get_or_create(field=field)
-                coffee_berrie.weight = weight
-                coffee_berrie.save()
-                messages.success(request, 'Coffee berries weight updated successfully.')
-                return redirect('admin-dashboard')
-            else:
-                messages.error(request, 'Farmer not found. Please enter a valid farmer name.')
-    else:
-        form = CoffeeBerriesForm()
-
-    return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
-
-def admin_dashboard(request):
     farmers = Farmer.objects.all()
     
     if request.method == 'POST':
@@ -146,8 +125,90 @@ def admin_dashboard(request):
         form = CoffeeBerriesForm()
 
     return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
+def enter_weight(request, farmer_id):
+    farmer = get_object_or_404(Farmer, id=farmer_id)
+    
+    try:
+        field = Field.objects.get(farmer=farmer)
+    except Field.DoesNotExist:
+        field = Field.objects.create(farmer=farmer, field_name="Default Field Name")
+    
+    total_coffee_weight = CoffeeBerries.objects.filter(field=field).aggregate(Sum('weight'))['weight__sum'] or 0
+
+    if request.method == 'POST':
+        form = CoffeeBerriesForm(request.POST)
+        if form.is_valid():
+            weight = form.cleaned_data['weight']
+            coffee_berrie, created = CoffeeBerries.objects.get_or_create(field=field, defaults={'weight': weight})
+            if not created:
+                coffee_berrie.weight += weight  # Add the new weight to the existing weight
+                coffee_berrie.save()
+            else:
+                total_coffee_weight += weight  # Update the total weight if new entry is created
+            messages.success(request, 'Coffee berries weight added successfully.')
+            return redirect('enter-weight', farmer_id=farmer.id)
+    else:
+        form = CoffeeBerriesForm()
+
+    return render(request, 'admin/coffee_weight.html', {
+        'farmer': farmer,
+        'field': field,
+        'total_coffee_weight': total_coffee_weight,
+        'form': form
+    })
+def admin_dashboard(request):
+    farmers = Farmer.objects.all()
+    
+    if request.method == 'POST':
+        form = CoffeeBerriesForm(request.POST)
+        if form.is_valid():
+            farmer_name = form.cleaned_data['farmer_name']
+            weight = form.cleaned_data['weight']
+            
+            farmer = Farmer.objects.filter(name=farmer_name).first()
+            if farmer:
+                try:
+                    field = Field.objects.get(farmer=farmer, field_name="Default Field Name")
+                except Field.DoesNotExist:
+                    field = Field.objects.create(farmer=farmer, field_name="Default Field Name")
+                
+                coffee_berrie, created = CoffeeBerries.objects.get_or_create(field=field, defaults={'weight': weight})
+                if not created:
+                    coffee_berrie.weight += weight  # Add the new weight to the existing weight
+                    coffee_berrie.save()
+                messages.success(request, 'Coffee berries weight updated successfully.')
+                return redirect('admin-dashboard')
+            else:
+                messages.error(request, 'Farmer not found. Please enter a valid farmer name.')
+    else:
+        form = CoffeeBerriesForm()
+
+    # Calculate total coffee weight for each farmer
+    for farmer in farmers:
+        fields = Field.objects.filter(farmer=farmer)
+        total_weight = CoffeeBerries.objects.filter(field__in=fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        farmer.total_coffee_weight = total_weight
+
+    return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
+
 
 def all_farmers(request):
     farmers = Farmer.objects.all()
-    logger.debug(f"Retrieved farmers: {farmers}")
-    return render(request, 'admin/all_farmers.html', {'farmers': farmers})
+    total_coffee_weight = 0
+    for farmer in farmers:
+        farmer_fields = farmer.field_set.all()
+        farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
+        farmer.coffee_weight = farmer_coffee_weight
+        total_coffee_weight += farmer_coffee_weight
+
+    context = {
+        'farmers': farmers,
+        'total_coffee_weight': total_coffee_weight,
+    }
+    return render(request, 'admin/all_farmers.html', context)
+
+def delete_farmer(request, farmer_id):
+    farmer = get_object_or_404(Farmer, id=farmer_id)
+    farmer.delete()
+    messages.success(request, 'Farmer deleted successfully.')
+    return redirect('all-farmers')

@@ -11,4 +11,5 @@ urlpatterns = [
     path('register-new-farmer/', views.register_new_farmer, name='register-new-farmer'),
     path('all-farmers/', views.all_farmers, name='all-farmers'),
     path('enter-weight/<int:farmer_id>/', views.enter_weight, name='enter-weight'),
+    path('delete/<int:farmer_id>/', views.delete_farmer, name='delete-farmer'),
 ]

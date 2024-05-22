@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: cursive;
+  font-family: sans-serif;
 }
 
 a {
@@ -138,12 +138,29 @@ input[type=checkbox] {
     background-color: #4c9e9e;
   }
 }
-/* Additional CSS for images in service cards */
+
+/* The styles for the cards */
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+.card-box {
+  display: flex;
+  flex-direction: column;  
+}
+
+.card {
+  display: inline-block;
+  position: relative;
+  padding: .1em 16px;
+  background-color: #c9bbbb;
+  border-radius: 10px;
+  margin: 10px;
+  
+}
+
 .card img {
-  width: 50px; /* Adjust the width as needed */
-  height: 50px; /* Adjust the height as needed */
-  display: block; 
-  margin: 0 auto;
-  border-radius: 50%; /* Makes the image circular */
-  object-fit: cover; /* Ensures the image fills the circle without distortion */
+  height: 80%;  
+  
 }
