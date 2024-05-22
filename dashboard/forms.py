@@ -47,7 +47,6 @@ class FarmerForm(forms.ModelForm):
         model = Farmer
         fields = ['name', 'phone', 'location']
 
-class CoffeeBerriesForm(forms.ModelForm):
-    class Meta:
-        model = CoffeeBerries
-        fields = ['weight']
+class CoffeeBerriesForm(forms.Form):
+    farmer_name = forms.CharField(label="Farmer's name", max_length=100)
+    weight = forms.FloatField(label="Coffee berries weight (kg)", initial=0.0)

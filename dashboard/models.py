@@ -26,5 +26,5 @@ class Field(models.Model):
     
 class CoffeeBerries(models.Model):
     field = models.ForeignKey(Field, on_delete=models.CASCADE)
-    weight = models.DecimalField(max_digits=5, decimal_places=2)
+    weight = models.FloatField(null=False, blank=False)
     
