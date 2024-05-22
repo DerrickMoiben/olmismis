@@ -12,15 +12,8 @@
         <h1>Register New Farmer</h1>
         <form method="post" class="custom-form">
             {% csrf_token %}
-            <label for="name">Name</label>
-            <input type="text" name="name" class="form-control" required>
-            <label for="phone">Phone Number</label>
-            <input type="text" name="phone_number" class="form-control" required>
-            <label for="location">Location</label>
-            <input type="text" name="location" class="form-control" required>
-            <label for="id_number">Id Number</label>
-            <input type="text" name="id_number" class="form-control" required>
-            <button type="submit" class="btn">Register</button>
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Register</button>
             <a href="{% url 'admin-dashboard' %}">Back</a>
         </form>
     </div>

@@ -1,25 +1,16 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Farmer's Coffee Weight</title>
-    <link rel="stylesheet" href="{% static 'css/register.css' %}">
+    <title>Admin dashboard</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Update Farmer's Coffee Weight</h1>
-        <form method="post" class="custom-form">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Update</button>
-
-            </div>
-        <a href="{% url 'all-farmers' %}" class="btn btn-secondary">All Farmers</a>
-        <a href="{% url 'register-new-farmer' %}" class="btn btn-secondary">Register New Farmer</a>
-        </form>
-    </div>
+    <h1>Welcome to admin dashboard</h1>
+    <ul>
+        <li><a href="{% url 'all-farmers' %}">All Farmers</a></li>
+        <li><a href="{% url 'register-new-farmer' %}">Register New Farmer</a></li>
+    </ul>
+    
 </body>
 </html>
