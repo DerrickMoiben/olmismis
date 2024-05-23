@@ -19,6 +19,7 @@ def land_page(request):
 def dashboard(request):
     return render(request, 'registration/dashboard.html')
 
+@csrf_protect
 def user_signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -52,6 +53,7 @@ def user_logout(request):
     logout(request)
     return redirect('login')
 
+@csrf_protect
 def register_new_farmer(request):
     if request.method == 'POST':
         form = FarmerForm(request.POST)
@@ -67,7 +69,7 @@ def register_new_farmer(request):
         form = FarmerForm()
     return render(request, 'admin/register_farmer.html', {'form': form})
 
-
+@csrf_protect
 def enter_weight(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
     
@@ -99,6 +101,8 @@ def enter_weight(request, farmer_id):
         'total_coffee_weight': total_coffee_weight,
         'form': form
     })
+
+@csrf_protect
 def admin_dashboard(request):
     farmers = Farmer.objects.all()
     
