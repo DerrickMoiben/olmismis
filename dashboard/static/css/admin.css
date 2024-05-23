@@ -54,3 +54,30 @@ a:hover {
     color: #8789e2;
     text-decoration: underline;
 }
+/* Responsive Styles */
+@media (max-width: 767px) {
+    /* Styles for small screens (mobile devices) */
+    .container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .custom-form input,
+    .custom-form button {
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    /* Styles for medium screens (tablets) */
+    .container {
+        max-width: 700px;
+    }
+}
+
+@media (min-width: 1200px) {
+    /* Styles for large screens (desktops) */
+    .container {
+        max-width: 900px;
+    }
+}
