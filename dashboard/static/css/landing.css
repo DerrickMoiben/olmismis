@@ -1,21 +1,4 @@
-/* UTILITIES */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
-body {
-  font-family: sans-serif;
-}
-
-a {
-  text-decoration: none;
-}
-
-li {
-  list-style: none;
-}
 /* NAVBAR STYLING STARTS */
 .navbar {
   display: flex;
@@ -139,32 +122,57 @@ input[type=checkbox] {
   }
 }
 
-/* The styles for the cards */
-.row {
+.hero{
+  background-image: url('https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: center;
+  text-align: center;
 }
-
-.card-box {
+.hero h1{
+  font-size: 3em;
+  color: #fff;
+}
+.hero p{
+  font-size: 1.5em;
+  color: #fff;
+}
+.hero button{
+  padding: 10px 20px;
+  font-size: 1.2em;
+  background-color: teal;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.hero button:hover{
+  background-color: #4c9e9e;
+}
+.features{
   display: flex;
-  flex-direction: column;  
+  justify-content: center;
+  align-items: center;
+  gap: 2em;
+  margin: 50px 0;
 }
-
-.card {
-  display: inline-block;
-  position: relative;
-  padding: .1em 16px;
-  background-color: #c9bbbb;
-  border-radius: 10px;
-  margin: 10px;
-  
+.features div{
+  text-align: center;
 }
-
-.card img {
-  height: 80%;  
-  
+.features div h2{
+  font-size: 2em;
+  color: teal;
 }
-
+footer{
+  background-color: teal;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
 /* Responsive Styles */
 @media (max-width: 767px) {
   /* Styles for small screens (mobile devices) */
@@ -192,3 +200,4 @@ input[type=checkbox] {
       max-width: 900px;
   }
 }
+

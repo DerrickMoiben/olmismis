@@ -6,9 +6,8 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="static/css/landing.css"/>
+  <link rel="stylesheet" href="/dashboard/static/css/landing.css"/>
   <title>Olmismis farmers co-operative soceity</title>
-  <link rel="stylesheet" href="../static/css/main.css">
 </head>
 
 <body>
@@ -28,7 +27,6 @@
 
         <li><a href="/">Home</a></li>
         <li><a href="/dashboard/dashboard">Admin</a></li>
-        <li><a href="/">Farmer</a></li>
         <li><a href="/">About</a></li>
 
         <li class="services">
@@ -51,68 +49,36 @@
   </nav>
   <!-- End of the navbar -->
 
-  <!-- Start of the slideshow -->
-  <section style="display: flex; justify-content: center;">
-    <div class="carousel">
-      <div class="slide">
-          <img src="../static/images/dashboard.jpg" alt="" width="100%">
-          <div class="text">Caption Text1</div>
-      </div>
-      <div class="slide">
-          <img src="../static/images/coffee.png" alt="" width="100%">
-          <div class="text">Caption Text2</div>
-      </div>
-      <div class="slide">
-          <img src="../static/images/landing.png" alt="" width="100%">
-          <div class="text">Caption Text3</div>
-      </div>
-
-      <a href="javascript:void(0)" class="prev" onclick="plusSlides(-1)">&#10094</a>
-      <a href="javascript:void(0)" class="next" onclick="plusSlides(1)">&#10095</a>
-
-      <div class="dot-box">
-        <span class="dot" onclick="currentSlide(1)"></span>
-        <span class="dot" onclick="currentSlide(2)"></span>
-        <span class="dot" onclick="currentSlide(3)"></span>
-      </div>
+  <div class="hero">
+      <h1>Welcome to Olmismis Farmers Co-operative Society</h1>
+      <p>Join us today and enjoy the benefits of being a member</p>
+      <p>Providing quality coffee and dairy products to our community</p>
+      <button>Join Now</button>
   </div>
-  </section>
 
-  <h3>Founding Fatheres</h3>
-
-  <section class="row">
-    <div class="card-box">
-      <div class="card-row">
-
-        <div class="card col-6">
-          <img src="../static/images/avatar1.png" alt="Wesley Too">
-          <div class="overlay"></div>
-          <div class="name"></div>
-        </div>
-
-        <div class="card col-6">
-          <img src="../static/images/avatar2.png" alt="James Meli">
-          <div class="overlay"></div>
-          <div class="name"></div>
-
-      </div>
-
-      <div class="card-row">
-        <div class="card col-6">
-          <img src="../static/images/avatar3.png" alt="Sammy Cheruiyot">
-          <div class="overlay"></div>
-          <div class="name"></div>
-        </div>
-        <div class="card col-6">
-          <img src="../static/images/avatar5.png" alt="Paul Too">
-          <div class="overlay"></div>
-          <div class="name"></div>
-        </div>
-      </div>
+  <div class="features">
+    <div>
+      <img src="/static/images/coffee.png" alt="Coffee">
+      <h2>Coffee services</h2>
+      <p>We offer coffee pulping, grinding and roasting services to our esteam members</p>
     </div>
-  </section>
-
+    <div>
+      <img src="" alt="Milk">
+      <h2>Dairy services</h2>
+      <p>We offer milk processing services to our esteemed members</p>
+    </div>
+    <div>
+      <h2>Membership</h2>
+      <p>Become a member today  by just visting our oficces for full registration</p>
+    </div>
+  </div>
+  
+  
   <script src="../static/javascript/main.js"></script>
+
+  <footer>
+    <p>&copy; 2024 Olmismis Farmers Co-operative Society. All rights reserved</p>
+  </footer>
 </body>
 
 </html>
