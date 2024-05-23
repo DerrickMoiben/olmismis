@@ -1,31 +1,39 @@
-form {
-    width: 300px;
+/* General container styles */
+.container {
+    width: 100%;
+    max-width: 400px;
     margin: 50px auto;
     border: 1px solid #ccc;
     padding: 20px;
     border-radius: 5px;
     background-color: #f9f9f9;
+    font-family: sans-serif;
 }
 
-h1 {
+/* Heading styles */
+h1, h2 {
     text-align: center;
     color: #4CAF50;
 }
 
+/* Label styles */
 label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
-input[type="text"] {
-    width: 90%;
+/* Input field styles */
+input {
+    width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-bottom: 15px;
+    box-sizing: border-box;
 }
 
+/* Button styles */
 button[type="submit"] {
     background-color: #4CAF50;
     color: white;
@@ -42,8 +50,9 @@ button[type="submit"]:hover {
     background-color: #45a049;
 }
 
+/* Link styles */
 a {
-    color: #1f08a1;
+    color: #0b38b4;
     display: block;
     margin-top: 10px;
     text-align: center;
@@ -51,9 +60,10 @@ a {
 }
 
 a:hover {
-    color: #8789e2;
+    color: #222222;
     text-decoration: underline;
 }
+
 /* Responsive Styles */
 @media (max-width: 767px) {
     /* Styles for small screens (mobile devices) */
@@ -62,22 +72,31 @@ a:hover {
         padding: 20px;
     }
 
-    .custom-form input,
-    .custom-form button {
-        font-size: 14px;
+    input,
+    button {
+        font-size: 16px; /* Increase font size for better readability */
     }
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
     /* Styles for medium screens (tablets) */
     .container {
-        max-width: 700px;
+        max-width: 300px;
     }
 }
 
 @media (min-width: 1200px) {
     /* Styles for large screens (desktops) */
     .container {
-        max-width: 900px;
+        max-width: 400px;
+    }
+
+    input {
+        font-size: 18px; /* Adjust font size for better readability on larger screens */
+    }
+
+    button {
+        font-size: 18px; /* Adjust font size for better readability on larger screens */
+        padding: 12px 24px; /* Adjust padding for larger buttons */
     }
 }

@@ -1,0 +1,22 @@
+@media (min-width: 768px) and (max-width: 1199px) {
+    /* Styles for medium screens (tablets) */
+    .container {
+        max-width: 300px;
+    }
+}
+@media (min-width: 300px) {
+    /* Styles for large screens (desktops) */
+    .container {
+        max-width: 300px;
+    }
+
+    .container input[type="text"],
+    .container input[type="password"] {
+        font-size: 18px; /* Adjust font size for better readability on larger screens */
+    }
+
+    .container button[type="submit"] {
+        font-size: 18px; /* Adjust font size for better readability on larger screens */
+        padding: 12px 24px; /* Adjust padding for larger buttons */
+    }
+}
