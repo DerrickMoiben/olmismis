@@ -132,7 +132,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any inquiries or issues, please open an issue on the repository or contact the project maintainer at [derrickmoio92@gmail.com](mailto:your.email@example.com).
+For any inquiries or issues, please open an issue on the repository or contact the project maintainer at [derrickmoio92@gmail.com](mailto:derrickmoio92@gmail.com).
 
 ---
 
