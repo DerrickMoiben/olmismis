@@ -43,8 +43,8 @@ Ensure you have the following installed:
 
 1. **Clone the repository**:
     ```sh
-    git clone https://github.com/yourusername/factory-management-optimization.git
-    cd factory-management-optimization
+    git clone https://github.com/yourusername/olmismis.git
+    cd olmismis
     ```
 
 2. **Install dependencies**:
@@ -82,7 +82,7 @@ The project is deployed on Render.com. Follow these steps to deploy your own ver
     # Build command
     pip install -r requirements.txt
     # Start command
-    gunicorn factory_management_optimization.wsgi
+    gunicorn project_settings.wsgi:application
     ```
 
 4. **Set up environment variables** as needed.
@@ -132,7 +132,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any inquiries or issues, please open an issue on the repository or contact the project maintainer at [your.email@example.com](mailto:your.email@example.com).
+For any inquiries or issues, please open an issue on the repository or contact the project maintainer at [derrickmoio92@gmail.com](mailto:your.email@example.com).
 
 ---
 
