@@ -1,5 +1,6 @@
 .container {
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
     margin: 50px auto;
     border: 1px solid #ccc;
     padding: 20px;
@@ -60,8 +61,6 @@
     text-decoration: underline;
 }
 
-
-
 /* Responsive Styles */
 @media (max-width: 767px) {
     /* Styles for small screens (mobile devices) */
@@ -70,9 +69,9 @@
         padding: 20px;
     }
 
-    .custom-form input,
-    .custom-form button {
-        font-size: 14px;
+    .container input,
+    .container button {
+        font-size: 16px; /* Increase font size for better readability */
     }
 }
 
@@ -80,12 +79,5 @@
     /* Styles for medium screens (tablets) */
     .container {
         max-width: 700px;
-    }
-}
-
-@media (min-width: 1200px) {
-    /* Styles for large screens (desktops) */
-    .container {
-        max-width: 900px;
     }
 }
