@@ -1,4 +1,4 @@
-{% load static %} 
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,79 +6,107 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/dashboard/static/css/landing.css"/>
-  <title>Olmismis farmers co-operative soceity</title>
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+  <title>Olmismis Farmers Co-operative Society</title>
 </head>
 
 <body>
-  <nav class="navbar">
-    <!-- LOGO - TEXT -->
-    <div class="logo">Olmismis</div>
-
-
-    <ul class="nav-links">
-
-      <!-- USING CHECKBOX HACK -->
-      <input type="checkbox" id="checkbox_toggle" />
-      <label for="checkbox_toggle" class="hamburger">&#9776;</label>
-
-      <!-- NAVIGATION MENUS -->
-      <div class="menu">
-
-        <li><a href="/">Home</a></li>
-        <li><a href="/dashboard/dashboard">Admin</a></li>
-        <li><a href="/">About</a></li>
-
-        <li class="services">
-          <a href="#services">Services</a>
-
-          <!-- DROPDOWN MENU -->
-          <ul class="dropdown">
-            <li><a href="/"> coffee pulping </a></li>
-            <li><a href="/">cofee grinding </a></li>
-            <li><a href="/"></a></li>
-            <li><a href="/"></a></li>
-            <li><a href="/"></a></li>
-          </ul>
-
-        </li>
-
-        <li><a href="/">Contact</a></li>
-      </div>
-    </ul>
-  </nav>
-  <!-- End of the navbar -->
-
+    <nav class="navbar">
+        <!-- LOGO - TEXT -->
+        <div class="logo">Olmismis</div>
+    
+    
+        <ul class="nav-links">
+    
+          <!-- USING CHECKBOX HACK -->
+          <input type="checkbox" id="checkbox_toggle" />
+          <label for="checkbox_toggle" class="hamburger">&#9776;</label>
+    
+          <!-- NAVIGATION MENUS -->
+          <div class="menu">
+    
+            <a href="/">Home</a>
+            <a href="/dashboard/dashboard">coffe department</a>
+            <a href="/">About</a>
+            <a href="#services">Services</a>
+            <a href="/">Contact</a>
+          </div>
+        </ul>
+      </nav>
   <div class="hero">
-      <h1>Welcome to Olmismis Farmers Co-operative Society</h1>
-      <p>Join us today and enjoy the benefits of being a member</p>
-      <p>Providing quality coffee and dairy products to our community</p>
-      <button>Join Now</button>
+    <h1>Welcome to Olmismis Farmers Co-operative Society</h1>
+    <p>Join us today and enjoy the benefits of being a member</p>
+    <p>Providing quality coffee and dairy products to our community</p>
+    <p>Become a member today by just visiting our offices for full registration</p>
   </div>
-
   <div class="features">
     <div>
-      <img src="/static/images/coffee.png" alt="Coffee">
+      <img src="/static/images/coffe.png" alt="Coffee">
       <h2>Coffee services</h2>
-      <p>We offer coffee pulping, grinding and roasting services to our esteam members</p>
+      <p>We offer coffee pulping, grinding, and roasting services to our esteemed members</p>
     </div>
     <div>
-      <img src="" alt="Milk">
+      <img src="/static/images/milk.png" alt="Milk">
       <h2>Dairy services</h2>
       <p>We offer milk processing services to our esteemed members</p>
     </div>
     <div>
       <h2>Membership</h2>
-      <p>Become a member today  by just visting our oficces for full registration</p>
+      <p>Become a member today by just visiting our offices for full registration</p>
     </div>
   </div>
-  
-  
-  <script src="../static/javascript/main.js"></script>
-
-  <footer>
-    <p>&copy; 2024 Olmismis Farmers Co-operative Society. All rights reserved</p>
+  <div class="about">
+    <h2>About Us</h2>
+    <p>Olmismis Farmers Co-operative Society is a community-driven organization that empowers local farmers and provides high-quality agricultural products to our customers. We are committed to sustainable farming practices and supporting the growth of our community.</p>
+    <a href="/about" class="btn">Learn More</a>
+  </div>
+  <div class="products">
+    <h2>Our Products</h2>
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="/static/images/coffee_product.png" alt="Coffee Beans">
+        <h3>Coffee Beans</h3>
+        <p>Freshly roasted and ground coffee beans from our local farmers.</p>
+      </div>
+      <div class="product-card">
+        <img src="/static/images/milk.png" alt="Milk Carton">
+        <h3>Milk</h3>
+        <p>High-quality milk processed and packaged for our members.</p>
+      </div>
+      <div class="product-card">
+        <img src="/static/images/mala.png" alt="Cheese">
+        <h3>Mala(Mursik)</h3>
+        <p>Artisanal cheese made from our farm-fresh dairy products.</p>
+      </div>
+    </div>
+  </div>
+  <div class="testimonials">
+    <h2>What Our Members Say</h2>
+    <div class="testimonial-card">
+      <img src="/static/images/man.png" alt="Testimonial 1">
+      <p>"Olmismis has been a game-changer for my farming business. The co-op has provided invaluable support and resources, helping me grow my operation and reach new markets."</p>
+      <h4>- Kobbe Mainoo</h4>
+    </div>
+    <div class="testimonial-card">
+      <img src="/static/images/woman1.png" alt="Testimonial 2">
+      <p>"As a member of Olmisis you willhave the best services you have ever received </p>
+      <h4>Mitchelle Elian</h4>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="footer-logo"></div>
+    <ul class="footer-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/dashboard/dashboard">Coffee department</a></li>
+      <li><a href="/">About</a></li>
+      <li><a href="/">Services</a></li>
+      <li><a href="/">Contact</a></li>
+    </ul>
+    <div class="social-links">
+      <a href="https://www.facebook.com"><img src="/static/images/facebook.png" alt="Facebook" class="social-icon"></a>
+      <a href="https://www.twitter.com"><img src="/static/images/twitter.png" alt="Twitter" class="social-icon"></a>
+    </div>
+    <p></p>
   </footer>
 </body>
 
-</html>
