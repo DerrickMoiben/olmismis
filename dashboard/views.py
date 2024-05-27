@@ -138,7 +138,7 @@ def admin_dashboard(request):
 
     return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
 
-
+@csrf_protect
 def all_farmers(request):
     farmers = Farmer.objects.all()
     total_coffee_weight = 0
@@ -153,7 +153,7 @@ def all_farmers(request):
         'total_coffee_weight': total_coffee_weight,
     }
     return render(request, 'admin/all_farmers.html', context)
-
+@csrf_protect
 def delete_farmer(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
     farmer.delete()

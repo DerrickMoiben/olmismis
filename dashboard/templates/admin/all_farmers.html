@@ -38,6 +38,21 @@
             text-decoration: none;
             color: blue;
         }
+        
+        /* Message Styles */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        
+        ul li {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -70,6 +85,13 @@
                     </td>
                 </tr>
                 {% endfor %}
+                {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </tbody>
         </table>
         <p>Total coffee weight: {{ total_coffee_weight }} kg</p>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form1.css' %}">
 </head>
 <body style="padding: 0; margin: 0;">
     <nav class="navbar">
@@ -13,15 +13,23 @@
             <li><a href="{% url 'register-new-farmer' %}">Register New Farmer</a></li>
         </ul>
     </nav>
-    <h1>Welcome to Admin Dashboard</h1>
     <div class="container">
-        <form method="post">
+        <h1>Welcome to Admin Dashboard</h1>
+        <form method="post" class="custom-form">
             <h2>Update Coffee Weight</h2>
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Update Weight</button>
-          
         </form>
     </div>
+    {% if messages %}
+        <div class="message-container">
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 </body>
 </html>

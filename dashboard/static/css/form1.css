@@ -11,7 +11,6 @@
     padding: 0;
     overflow: hidden;
     background-color: #08e08d;
-
 }
 .navbar li {
     float: right;
@@ -27,93 +26,70 @@
     background-color: #111;
 }
 
-
 h1 {
     text-align: center;
     color: #4CAF50;
-
 }
+
 /* Container styles */
 .container {
     width: 100%;
     max-width: 300px;
     margin: 50px auto;
-    border: 1px solid #ccc;
-    padding: 50px;
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    background-color: #f9f9f9;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
 }
 
-/* Heading styles */
-.container h2 {
-    text-align: center;
-    color: #4CAF50;
+.custom-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-/* Label styles */
-.container label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-/* Input field styles */
-.container input {
-    width: 90%;
-}
-
-.container input[type="text"],
-.container input[type="password"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-/* Button styles */
-.container button[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.custom-form input,
+.custom-form button {
     width: 100%;
-    margin-bottom: 15px;
+    padding: 10px;
     font-size: 16px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
 }
 
-.container button[type="submit"]:hover {
-    background-color: #45a049;
+.custom-form button {
+    background-color: #14ac3a;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-/* Link styles */
-.container a {
-    color: #0b38b4;
-    display: block;
-    margin-top: 10px;
-    text-align: center;
-    text-decoration: none;
+.custom-form button:hover {
+    background-color: #71a174;
 }
 
-.container a:hover {
-    color: #222222;
-    text-decoration: underline;
-}
 /* Message Styles */
+.message-container {
+    max-width: 300px;
+    margin: 20px auto;
+}
+
 .messages {
     list-style-type: none;
     padding: 0;
-    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .messages li {
     background-color: #f8d7da;
     color: #721c24;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive Styles */

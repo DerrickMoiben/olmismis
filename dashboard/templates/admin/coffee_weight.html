@@ -8,20 +8,24 @@
     <link rel="stylesheet" href="{% static 'css/weight.css' %}">
 </head>
 <body>
-    <h1>Enter coffee weight for {{ farmer.name }}</h1>
-    <p>Total Coffee weight: {{ total_coffee_weight }}</p>
-    <form method="post" class="coffee-form">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Update</button>
-    </form>
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>   
-    {% endif %}
-    <a href="{% url 'admin-dashboard' %}" class="back-link">Back</a>
+    <div class="container">
+        <h1>Enter coffee weight for {{ farmer.name }}</h1>
+        <p>Total Coffee weight: {{ total_coffee_weight }}</p>
+        <form method="post" class="coffee-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Update</button>
+        </form>
+        {% if messages %}
+            <div class="message-container">
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <a href="{% url 'admin-dashboard' %}" class="back-link">Back</a>
+    </div>
 </body>
 </html>
