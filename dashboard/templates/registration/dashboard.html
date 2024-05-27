@@ -1,31 +1,116 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Department</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
 
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
 
+        /* User Information Styles */
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-{% block content %}
+        .user-info p {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
 
+        .logout-link {
+            text-decoration: none;
+            color: #4CAF50;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
 
+        .logout-link:hover {
+            color: #45a049;
+        }
 
-{% if request.user.is_authenticated %}
+        /* Hero Section Styles */
+        .hero-section {
+            text-align: center;
+            padding: 40px 0;
+        }
 
-  <p>{{ request.user.username }}</p>
+        .hero-section h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 10px;
+        }
 
-  <a href="{% url 'logout' %}">login</a>
+        .hero-section p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
 
-{% else %}
-<p>Coffee departnemnt where excellecy meets effcieny</p>
+        .auth-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
 
-  <a href="{% url 'login' %}">Login</a>
+        .auth-links a {
+            text-decoration: none;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
 
-  <a href="{% url 'signup' %}">Signup</a>
-  <a href="{% url 'logout' %}">log out</a>
+        .auth-links a:hover {
+            background-color: #45a049;
+        }
 
-{% endif %}
+        .login-link {
+            background-color: #4CAF50 !important;
+        }
 
-
-
-
-
-
-
-{% endblock %}
+        .signup-link {
+            background-color: #007bff !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if request.user.is_authenticated %}
+        <div class="user-info">
+            <p>Welcome, {{ request.user.username }}!</p>
+            <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+        </div>
+        {% else %}
+        <div class="hero-section">
+            <h1>Coffee Department</h1>
+            <p>Where excellence meets efficiency</p>
+            <div class="auth-links">
+                <a href="{% url 'login' %}" class="login-link">Login</a>
+                <a href="{% url 'signup' %}" class="signup-link">Sign Up</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

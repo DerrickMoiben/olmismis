@@ -20,98 +20,98 @@ body, ul, li, h1, h2, h3, h4, p, form {
   }
   
   /* NAVBAR STYLING STARTS */
-  
-  .navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    background-color: teal;
-    color: #fff;
-  }
-  
-  .nav-links a {
-    color: #fff;
-  }
-  
-  /* LOGO */
-  .logo {
-    font-size: 32px;
-  }
-  
-  /* NAVBAR MENU */
+/* NAVBAR STYLING STARTS */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: teal;
+  color: #fff;
+}
+
+.nav-links a {
+  color: #fff;
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-links a:hover {
+  background-color: #4c9e9e;
+  border-radius: 5px;
+}
+
+/* LOGO */
+.logo {
+  font-size: 32px;
+}
+
+/* NAVBAR MENU */
+.menu {
+  display: flex;
+  gap: 1em;
+  font-size: 18px;
+}
+
+.menu li {
+  padding: 5px 14px;
+}
+
+/* RESPONSIVE NAVBAR MENU STARTS */
+
+/* CHECKBOX HACK */
+input[type=checkbox] {
+  display: none;
+}
+
+/* HAMBURGER MENU */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  user-select: none;
+  color: #fff;
+}
+
+/* APPLYING MEDIA QUERIES */
+@media (max-width: 768px) {
   .menu {
-    display: flex;
-    gap: 1em;
-    font-size: 18px;
+    display: none;
+    position: absolute;
+    background-color: teal;
+    width: 100%;
+    left: 0;
+    top: 60px;
+    text-align: center;
+    padding: 16px 0;
+    z-index: 1;
   }
-  
-  .menu li:hover {
+
+  .menu a {
+    display: block;
+    padding: 12px;
+    color: #fff;
+    transition: background-color 0.3s ease;
+  }
+
+  .menu a:hover {
     background-color: #4c9e9e;
-    border-radius: 5px;
-    transition: 0.3s ease;
   }
-  
-  .menu li {
-    padding: 5px 14px;
+
+  .menu li + li {
+    margin-top: 12px;
   }
-  
-  
-  /* RESPONSIVE NAVBAR MENU STARTS */
-  
-  /* CHECKBOX HACK */
-  
-  input[type=checkbox] {
-    display: none;
-  } 
-  
-  /* HAMBURGER MENU */
+
+  #checkbox_toggle:checked ~ .menu {
+    display: block;
+  }
+
   .hamburger {
-    display: none;
-    font-size: 24px;
-    user-select: none;
+    display: block;
   }
-  
-  /* APPLYING MEDIA QUERIES */
-  @media (max-width: 768px) {
-   .menu {
-      display:none;
-      position: absolute;
-      background-color:teal;
-      right: 0;
-      left: 0;
-      text-align: center;
-      padding: 16px 0;
-    }
-  
-    .menu li:hover {
-      display: inline-block;
-      background-color:#4c9e9e;
-      transition: 0.3s ease;
-    }
-  
-    .menu li + li {
-      margin-top: 12px;
-    }
-  
-    input[type=checkbox]:checked ~ .menu {
-      display: block;
-    }
-  
-    .hamburger {
-      display: block;
-    }
-  
-    .dropdown {
-      left: 50%;
-      top: 30px;
-      transform: translateX(35%);
-    }
-  
-    .dropdown li:hover {
-      background-color: #4c9e9e;
-    }
-  }
+}
+
+
   
   /* HERO SECTION */
   .hero {
@@ -136,6 +136,7 @@ body, ul, li, h1, h2, h3, h4, p, form {
     margin-bottom: 2rem;
   }
   
+
   
   /* FEATURES SECTION */
   .features {
