@@ -1,0 +1,93 @@
+/* Global styles */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto;
+    border: 1px solid #ccc;
+    padding: 30px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    text-align: center;
+    color: #4CAF50;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+a {
+    color: #0b38b4;
+    display: inline-block;
+    margin-top: 15px;
+    text-align: center;
+    text-decoration: none;
+}
+
+@media (max-width: 767px) {
+    .container {
+        padding: 20px; /* Adjust padding for smaller screens */
+        max-width: 100%; /* Allow the container to take full width */
+    }
+
+    input,
+    button {
+        font-size: 16px; /* Increase font size for better readability */
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .container {
+        max-width: 50%; /* Adjust the container width for tablets */
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 30%; /* Adjust the container width for larger screens */
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        font-size: 20px; /* Further adjust font size for better readability on larger screens */
+    }
+
+    button[type="submit"] {
+        font-size: 20px; /* Further adjust font size for better readability on larger screens */
+        padding: 15px 30px; /* Further adjust padding for larger buttons */
+    }
+}
