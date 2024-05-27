@@ -1,68 +1,97 @@
-/* General container styles */
-.container {
-    width: 100%;
-    max-width: 400px;
-    margin: 50px auto;
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    font-family: sans-serif;
+/* NAVIGATION BAR */
+/* Navigation bar styles */
+.navbar {
+    overflow: hidden;
+    background-color: #1fe678; 
 }
 
-/* Heading styles */
-h1, h2 {
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #08e08d;
+}
+.navbar li {
+    float: right;
+}
+.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.navbar li a:hover {
+    background-color: #111;
+}
+
+h1 {
     text-align: center;
     color: #4CAF50;
 }
 
-/* Label styles */
-label {
-    display: block;
-    margin-bottom: 5px;
+/* Container styles */
+.container {
+    width: 100%;
+    max-width: 300px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+}
+
+.custom-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.custom-form input,
+.custom-form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.custom-form button {
+    background-color: #14ac3a;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.custom-form button:hover {
+    background-color: #71a174;
+}
+
+/* Message Styles */
+.message-container {
+    max-width: 300px;
+    margin: 20px auto;
+}
+
+.messages {
+    list-style-type: none;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
     font-weight: bold;
 }
 
-/* Input field styles */
-input {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.messages li {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 8px;
     margin-bottom: 15px;
-    box-sizing: border-box;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Button styles */
-button[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    margin-bottom: 15px;
-    font-size: 16px;
-}
-
-button[type="submit"]:hover {
-    background-color: #45a049;
-}
-
-/* Link styles */
-a {
-    color: #0b38b4;
-    display: block;
-    margin-top: 10px;
-    text-align: center;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #222222;
-    text-decoration: underline;
-}
 
 /* Responsive Styles */
 @media (max-width: 767px) {
@@ -72,8 +101,8 @@ a:hover {
         padding: 20px;
     }
 
-    input,
-    button {
+    .container input,
+    .container button {
         font-size: 16px; /* Increase font size for better readability */
     }
 }
@@ -85,17 +114,18 @@ a:hover {
     }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 300px) {
     /* Styles for large screens (desktops) */
     .container {
-        max-width: 400px;
+        max-width: 300px;
     }
 
-    input {
+    .container input[type="text"],
+    .container input[type="password"] {
         font-size: 18px; /* Adjust font size for better readability on larger screens */
     }
 
-    button {
+    .container button[type="submit"] {
         font-size: 18px; /* Adjust font size for better readability on larger screens */
         padding: 12px 24px; /* Adjust padding for larger buttons */
     }
