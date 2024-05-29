@@ -135,39 +135,46 @@ input[type=checkbox] {
     color: #1a0e0e;
     margin-bottom: 2rem;
   }
-  
-
-/* FEATURES SECTION */
+  /* FEATURES SECTION */
 .features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
   padding: 4rem 2rem;
 }
 
-.features div {
+.features h2 {
+  font-size: 2.2rem;
   text-align: center;
+  margin-bottom: 2rem;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.feature-card {
   background-color: #fff;
-  padding: 2rem;
   border-radius: 0.5rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.features div img {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 1rem;
+.feature-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
 
-.features div h2 {
-  font-size: 1.8rem;
-  color: teal;
-  margin-bottom: 1rem;
+.feature-card h3 {
+  font-size: 1.4rem;
+  padding: 1rem;
 }
 
-.features div p {
+.feature-card p {
   font-size: 1.1rem;
+  padding: 0 1rem 1rem;
 }
+
 
   
   /* ABOUT SECTION */
