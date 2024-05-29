@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 def land_page(request):
     return render(request, 'index.html')
-def dashboard(request):
-    return render(request, 'registration/dashboard.html')
 
 @csrf_protect
 def user_signup(request):
