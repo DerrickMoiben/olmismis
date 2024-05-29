@@ -1,99 +1,79 @@
+/* Heading styles */
+h1 {
+  text-align: center;
+  color: #4CAF50;
+  font-size: 24px; /* Adjust font size for better readability on mobile */
+}
+
+/* Container styles */
 .container {
-    width: 100%;
-    max-width: 600px;
-    margin: 50px auto;
-    border: 1px solid #ccc;
-    padding: 50px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    font-family: sans-serif;
+  width: 100%; /* Adjust width to be responsive */
+  max-width: 350px; /* Set a maximum width for larger screens */
+  margin: 50px auto; /* Center the container horizontally */
+  margin-block-start: 25vh;
+  padding: 20px; /* Adjust padding for better spacing on mobile */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  font-family: sans-serif;
+}
+
+@media (min-width: 768px) {
+  .container {
+      max-width: 600px; /* Adjust maximum width for larger screens */
   }
-  
-  .container h2 {
-    text-align: center;
-    color: #4CAF50;
-    font-size: 2rem;
-  }
-  
-  .container label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 1rem;
-  }
-  
-  .container input {
-    width: 90%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    font-size: 1rem;
-  }
-  
-  .container button[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    margin-bottom: 15px;
-    font-size: 1.25rem;
-  }
-  
-  .container button[type="submit"]:hover {
-    background-color: hsl(123, 40%, 45%);
-  }
-  
-  .container a {
-    color: #0b38b4;
-    display: block;
-    margin-top: 10px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 1rem;
-  }
-  
-  .container a:hover {
-    color: #222222;
-    text-decoration: underline;
-  }
-  
-  @media (max-width: 767px) {
-    .container {
-      padding: 20px;
-    }
-  
-    .container input,
-    .container button[type="submit"] {
-      font-size: 14px;
-      padding: 12px;
-    }
-  }
-  
-  @media (min-width: 768px) and (max-width: 1199px) {
-    .container {
-      max-width: 500px;
-    }
-  
-    .container input,
-    .container button[type="submit"] {
-      font-size: 16px;
-      padding: 14px;
-    }
-  }
-  
-  @media (min-width: 1200px) {
-    .container {
-      max-width: 600px;
-    }
-  
-    .container input,
-    .container button[type="submit"] {
-      font-size: 18px;
-      padding: 16px;
-    }
-  }
-  
+}
+
+/* Heading styles */
+.container h2 {
+  text-align: center;
+  color: #4CAF50;
+  font-size: 20px; /* Adjust font size for better readability on mobile */
+}
+
+/* Label styles */
+.container label {
+  display: block;
+  margin-bottom: 10px; /* Adjust margin for better spacing on mobile */
+  font-weight: bold;
+}
+
+/* Input field styles */
+.container input {
+  display: block;
+  width: 100%; /* Make input fields full-width for better usability on mobile */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+/* Button styles */
+.container button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 15px;
+  font-size: 16px; /* Adjust font size for better visibility on mobile */
+}
+
+.container button[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+/* Link styles */
+.container a {
+  color: #0b38b4;
+  display: block;
+  margin-top: 10px; /* Adjust margin for better spacing on mobile */
+  text-align: center;
+  text-decoration: none;
+}
+
+.container a:hover {
+  color: #222222;
+}

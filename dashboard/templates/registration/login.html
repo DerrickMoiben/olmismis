@@ -3,10 +3,10 @@
 <head>
     <title>Login</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/forms1.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}"/>
 </head>
 <body>
-    <div class="container">
+    <div class="container bg-primar">
         <h2 style="text-align: center;">Login</h2>
         <form id="login" method="post">
             {% csrf_token %}
@@ -15,7 +15,7 @@
             <label><b>Password</b></label>
             <input type="password" name="password" id="password" placeholder="Password" required>
             <div style="text-align: center;">
-                <button type="submit">Login</button>
+                <button type="submit" class="btn bg-sucess">Login</button>
             </div>
             <p>Don't have an account<a href="{% url 'signup' %}">Sign up</a></p>
         </form>
