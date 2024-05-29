@@ -1,44 +1,37 @@
-/* Global styles */
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-}
-
 .container {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
     margin: 50px auto;
     border: 1px solid #ccc;
-    padding: 30px;
+    padding: 50px;
     border-radius: 5px;
     background-color: #f9f9f9;
-}
-
-h2 {
+    font-family: sans-serif;
+  }
+  
+  .container h2 {
     text-align: center;
     color: #4CAF50;
-}
-
-label {
+    font-size: 2rem;
+  }
+  
+  .container label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-weight: bold;
-}
-
-input {
-    width: 100%;
-    padding: 10px;
+    font-size: 1rem;
+  }
+  
+  .container input {
+    width: 90%;
+    padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin-bottom: 20px;
-}
-
-button[type="submit"] {
+    margin-bottom: 15px;
+    font-size: 1rem;
+  }
+  
+  .container button[type="submit"] {
     background-color: #4CAF50;
     color: white;
     padding: 12px 24px;
@@ -46,48 +39,61 @@ button[type="submit"] {
     border-radius: 5px;
     cursor: pointer;
     width: 100%;
-    font-size: 16px;
-    margin-bottom: 20px;
-}
-
-a {
+    margin-bottom: 15px;
+    font-size: 1.25rem;
+  }
+  
+  .container button[type="submit"]:hover {
+    background-color: hsl(123, 40%, 45%);
+  }
+  
+  .container a {
     color: #0b38b4;
-    display: inline-block;
-    margin-top: 15px;
+    display: block;
+    margin-top: 10px;
     text-align: center;
     text-decoration: none;
-}
-
-@media (max-width: 767px) {
+    font-size: 1rem;
+  }
+  
+  .container a:hover {
+    color: #222222;
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 767px) {
     .container {
-        padding: 20px; /* Adjust padding for smaller screens */
-        max-width: 100%; /* Allow the container to take full width */
+      padding: 20px;
     }
-
-    input,
-    button {
-        font-size: 16px; /* Increase font size for better readability */
+  
+    .container input,
+    .container button[type="submit"] {
+      font-size: 14px;
+      padding: 12px;
     }
-}
-
-@media (min-width: 768px) and (max-width: 1199px) {
+  }
+  
+  @media (min-width: 768px) and (max-width: 1199px) {
     .container {
-        max-width: 50%; /* Adjust the container width for tablets */
+      max-width: 500px;
     }
-}
-
-@media (min-width: 1200px) {
+  
+    .container input,
+    .container button[type="submit"] {
+      font-size: 16px;
+      padding: 14px;
+    }
+  }
+  
+  @media (min-width: 1200px) {
     .container {
-        max-width: 30%; /* Adjust the container width for larger screens */
+      max-width: 600px;
     }
-
-    input[type="text"],
-    input[type="password"] {
-        font-size: 20px; /* Further adjust font size for better readability on larger screens */
+  
+    .container input,
+    .container button[type="submit"] {
+      font-size: 18px;
+      padding: 16px;
     }
-
-    button[type="submit"] {
-        font-size: 20px; /* Further adjust font size for better readability on larger screens */
-        padding: 15px 30px; /* Further adjust padding for larger buttons */
-    }
-}
+  }
+  
