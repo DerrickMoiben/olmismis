@@ -73,20 +73,6 @@ h1 {
     color: #222222;
     text-decoration: underline;
 }
-/* Message Styles */
-.messages {
-    list-style-type: none;
-    padding: 0;
-    margin-top: 20px;
-}
-
-.messages li {
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
 
 /* Responsive Styles */
 @media (max-width: 767px) {
@@ -111,7 +97,7 @@ h1 {
     }
 }
 
-@media (min-width: 300px) {
+@media (min-width: 1024px) {
     /* Styles for large screens (desktops) */
     .container {
         max-width: 300px;
