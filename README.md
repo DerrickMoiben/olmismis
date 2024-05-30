@@ -37,7 +37,6 @@
 <body>
     <div class="container">
         <h1>Factory Management Process Optimization</h1>
-
         <p>Welcome to the Factory Management Process Optimization project! This project aims to optimize the process of managing farmers, fields, and coffee berry weights. It is built using Django and deployed on Render.com.</p>
 
         <h2>Project Overview</h2>
