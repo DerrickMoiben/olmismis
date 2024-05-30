@@ -9,12 +9,12 @@ h1 {
 .container {
     width: 100%;
     max-width: 300px;
+    margin: 50px auto;
     border: 1px solid #ccc;
     padding: 50px;
     border-radius: 5px;
     background-color: #f9f9f9;
     font-family: sans-serif;
-    margin-block-start: 20vh;
 }
 
 /* Heading styles */
@@ -94,7 +94,6 @@ h1 {
     .container {
         margin: 20px;
         padding: 20px;
-        margin-block-start: 25vh;
     }
 
     .container input,
@@ -107,7 +106,6 @@ h1 {
     /* Styles for medium screens (tablets) */
     .container {
         max-width: 300px;
-        margin-block-start: 25vh;
     }
 }
 
@@ -115,7 +113,6 @@ h1 {
     /* Styles for large screens (desktops) */
     .container {
         max-width: 300px;
-        margin-block-start: 25vh;
     }
 
     .container input[type="text"],
