@@ -1,14 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, authenticate
 from .forms import SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm
-from django.contrib.auth.models import User
 from .models import Farmer, Field, CoffeeBerries
-from django.core.exceptions import MultipleObjectsReturned
 import logging
-from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
-from django.db import transaction
 from django.db.models import Sum
 
 logger = logging.getLogger(__name__)
@@ -46,10 +42,6 @@ def user_login(request):
         form = LoginForm()
     return render(request, 'registration/login.html', {'form': form})
 
-
-def user_logout(request):
-    logout(request)
-    return redirect('login')
 
 @csrf_protect
 def register_new_farmer(request):
