@@ -6,6 +6,9 @@ import logging
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.db.models import Sum
+from datetime import datetime
+from apis.sms import send_sms
+from escpos.printer import Usb
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +52,11 @@ def register_new_farmer(request):
         form = FarmerForm(request.POST)
         if form.is_valid():
             farmer = form.save(commit=False)
-            farmer.id_number = str(Farmer.objects.count() + 1)
+            farmer.number = str(Farmer.objects.count() + 1)
             farmer.save()
             messages.success(request, 'Farmer registered successfully.')
+            #send sms
+            send_sms(f"Dear {farmer.name}, you have been registered successfully at OLMISMIS FCS Ltd. Your  number is {farmer.number}.", [farmer.phone])
             return redirect('enter-weight', farmer_id=farmer.id)
         else:
             messages.error(request, '')
@@ -75,13 +80,28 @@ def enter_weight(request, farmer_id):
         if form.is_valid():
             weight = form.cleaned_data['weight']
             coffee_berrie, created = CoffeeBerries.objects.get_or_create(field=field, defaults={'weight': weight})
+
             if not created:
                 coffee_berrie.weight += weight  # Add the new weight to the existing weight
                 coffee_berrie.save()
             else:
                 total_coffee_weight += weight  # Update the total weight if new entry is created
-            messages.success(request, 'Coffee berries weight added successfully.')
+                
+                #send sms
+                try:
+                    current_datetime = datetime.now()
+                    formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
+
+                    #send_sms(f"Dear {farmer.name}, on {formatted_datetime}  you weighed {weight} kgs of coffee berries . Your total coffee weight is {total_coffee_weight} kgs.", [farmer.phone])
+                except Exception as e:  
+                    logger.error(f"Error sending SMS: {e}")
+                    messages.error(request, f'Error sending SMS: {e}')
+                    
+                messages.success(request, 'SMS sent successfully.and coffee weight added successfully.')
+
             return redirect('enter-weight', farmer_id=farmer.id)
+        messages.error(request, 'Please enter a valid weight.')
+        messages.success(request, 'Coffee berries weight added successfully.')
     else:
         form = CoffeeBerriesForm()
 
@@ -104,6 +124,7 @@ def admin_dashboard(request):
             
             farmer = Farmer.objects.filter(name=farmer_name).first()
             if farmer:
+                phone_number = farmer.phone
                 try:
                     field = Field.objects.get(farmer=farmer, field_name="Default Field Name")
                 except Field.DoesNotExist:
@@ -113,6 +134,44 @@ def admin_dashboard(request):
                 if not created:
                     coffee_berrie.weight += weight  # Add the new weight to the existing weight
                     coffee_berrie.save()
+                    
+                # Calculate total coffee weight for the updated farmer
+                farmer_fields = Field.objects.filter(farmer=farmer)
+                farmer_total_weight = CoffeeBerries.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+                farmer.total_coffee_weight = farmer_total_weight
+                farmer.save()
+
+                try:
+                    current_datetime = datetime.now()
+                    formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
+                    time = current_datetime.strftime('%H:%M')
+                    date = current_datetime.date()
+
+                    #try:                    
+                        #send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of coffee berries. Your total coffee weight is {farmer_total_weight} kgs.", [phone_number])
+                    #except Exception as e:
+                        #logger.error(f"Error sending SMS: {e}")
+                        #messages.error(request, f'Error sending SMS: {e}')
+                    
+                    # Print the receipt
+                    printer = Usb(0x0fe6, 0x811e, in_ep=0x82, out_ep=0x01)
+                    printer.set(align='center', font='b', width=4, height=6)
+                    printer.text("========================================\n")
+                    printer.text("OLMISMIS FCS Ltd\n")
+                    printer.text("========================================\n")
+                    printer.text(f"Date: {date}\n")
+                    printer.text(f"Time: {time}\n")
+                    printer.text("========================================\n")
+                    printer.text(f"Farmer Name: {farmer.name}\n")
+                    printer.text(f"Farmer number: {farmer.number}\n")
+                    printer.text(f"Weight of the Day: {weight} kgs\n")
+                    printer.text(f"Total Coffee Weight: {farmer_total_weight} kgs\n")
+                    printer.text("========================================\n\n\n")
+                    printer.cut()
+
+                except Exception as e:
+                    logger.error(f"Error sending SMS: {e}")
+                    messages.error(request, f'Error sending SMS: {e}')
                 messages.success(request, 'Coffee berries weight updated successfully.')
                 return redirect('admin-dashboard')
             else:
@@ -120,13 +179,8 @@ def admin_dashboard(request):
     else:
         form = CoffeeBerriesForm()
 
-    # Calculate total coffee weight for each farmer
-    for farmer in farmers:
-        fields = Field.objects.filter(farmer=farmer)
-        total_weight = CoffeeBerries.objects.filter(field__in=fields).aggregate(Sum('weight'))['weight__sum'] or 0
-        farmer.total_coffee_weight = total_weight
-
     return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
+
 
 @csrf_protect
 def all_farmers(request):
@@ -149,3 +203,4 @@ def delete_farmer(request, farmer_id):
     farmer.delete()
     messages.success(request, 'Farmer deleted successfully.')
     return redirect('all-farmers')
+

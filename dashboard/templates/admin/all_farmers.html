@@ -65,6 +65,7 @@
                     <th>Name</th>
                     <th>Phone</th>
                     <th>Location</th>
+                    <th>ID</th>
                     <th>Coffee Weight (kg)</th>
                     <th>Action</th>
                 </tr>
@@ -72,10 +73,11 @@
             <tbody>
                 {% for farmer in farmers %}
                 <tr>
-                    <td>{{farmer.id_number }}</td>
+                    <td>{{farmer.number }}</td>
                     <td>{{ farmer.name }}</td>
                     <td>{{ farmer.phone }}</td>
                     <td>{{ farmer.location }}</td>
+                    <td>{{ farmer.id_number}}</td>
                     <td>{{ farmer.coffee_weight }}</td>
                     <td>
                         <form action="{% url 'delete-farmer' farmer.id %}" method="post" style="display:inline;">

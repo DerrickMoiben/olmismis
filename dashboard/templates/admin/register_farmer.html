@@ -6,13 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register New Farmer</title>
     <link rel="stylesheet" href="{% static 'css/register.css' %}">
+
+    <style>
+        .body {
+            display: flex;
+        }
+        .format {
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-right: none;
+        }
+
+        input[type= "number"]::-moz-list-number {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Register New Farmer</h1>
-        <form method="post" class="custom-form">
+        <form method="post" class="custom-form" id="form">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <label for="">Name</label>
+            <input type="text" placeholder="Enter your full name" name="name">
+            <label for="phone">Phone</label>
+            <div class="body">
+                <div class="format">+254</div>
+                <input type="text" name="phone" id="phone" placeholder="Enter your number" maxlength="14">
+            </div>
+            
+            <label for="">Location</label>
+            <input type="text" name="location" id="" placeholder=".e.g Kipkelion">
+            <label for="">Id number</label>
+            <input type="number" name="id_number" id="" placeholder="Enter your id number">
             <button type="submit" class="btn btn-primary">Register</button>
             <a href="{% url 'admin-dashboard' %}">Back</a>
         </form>
@@ -24,5 +52,23 @@
             </ul>
         {% endif %}
     </div>
+
+    <script>
+        function form() {
+            var form = document.getElementById('form');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var formData = new FormData(form);
+                let data = {};
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+                    
+                console.log(data);
+            });
+        }
+    </script>
+
 </body>
 </html>

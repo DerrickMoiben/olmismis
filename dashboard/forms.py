@@ -19,7 +19,7 @@ class LoginForm(forms.Form):
 class FarmerForm(forms.ModelForm):
     class Meta:
         model = Farmer
-        fields = ['name', 'phone', 'location']
+        fields = ['name', 'phone', 'location', 'id_number']
 
     def clean(self):
         cleaned_data = super().clean()
