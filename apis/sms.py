@@ -1,6 +1,6 @@
 import africastalking
 africastalking.initialize(
-    username="kimtai",
+    username="",
     api_key="a08206a77ad698b9d379a2aebf1df80b7cc98a902fa25c11f56c5829ef6960a7"
 )
 sms = africastalking.SMS
