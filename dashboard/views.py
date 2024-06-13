@@ -113,6 +113,74 @@ def enter_weight(request, farmer_id):
         'form': form
     })
 
+# @csrf_protect
+# def admin_dashboard(request):
+#     farmers = Farmer.objects.all()
+    
+#     if request.method == 'POST':
+#         form = CoffeeBerriesForm(request.POST)
+#         if form.is_valid():
+#             farmer_number = form.cleaned_data['farmer_name']
+#             weight = form.cleaned_data['weight']
+            
+#             farmer = Farmer.objects.filter(name=farmer_name).first()
+#             if farmer:
+#                 phone_number = farmer.phone
+#                 try:
+#                     field = Field.objects.get(farmer=farmer, field_name="Default Field Name")
+#                 except Field.DoesNotExist:
+#                     field = Field.objects.create(farmer=farmer, field_name="Default Field Name")
+                
+#                 coffee_berrie, created = CoffeeBerries.objects.get_or_create(field=field, defaults={'weight': weight})
+#                 if not created:
+#                     coffee_berrie.weight += weight  # Add the new weight to the existing weight
+#                     coffee_berrie.save()
+                    
+#                 # Calculate total coffee weight for the updated farmer
+#                 farmer_fields = Field.objects.filter(farmer=farmer)
+#                 farmer_total_weight = CoffeeBerries.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+#                 farmer.total_coffee_weight = farmer_total_weight
+#                 farmer.save()
+
+#                 try:
+#                     current_datetime = datetime.now()
+#                     formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
+#                     time = current_datetime.strftime('%H:%M')
+#                     date = current_datetime.date()
+
+#                     #try:                    
+#                         #send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of coffee berries. Your total coffee weight is {farmer_total_weight} kgs.", [phone_number])
+#                     #except Exception as e:
+#                         #logger.error(f"Error sending SMS: {e}")
+#                         #messages.error(request, f'Error sending SMS: {e}')
+                    
+#                     # Print the receipt
+#                     printer = Usb(0x0fe6, 0x811e, in_ep=0x82, out_ep=0x01)
+#                     printer.set(align='center', font='b', width=4, height=6)
+#                     printer.text("========================================\n")
+#                     printer.text("OLMISMIS FCS Ltd\n")
+#                     printer.text("========================================\n")
+#                     printer.text(f"Date: {date}\n")
+#                     printer.text(f"Time: {time}\n")
+#                     printer.text("========================================\n")
+#                     printer.text(f"Farmer Name: {farmer.name}\n")
+#                     printer.text(f"Farmer number: {farmer.number}\n")
+#                     printer.text(f"Weight of the Day: {weight} kgs\n")
+#                     printer.text(f"Total Coffee Weight: {farmer_total_weight} kgs\n")
+#                     printer.text("========================================\n\n\n")
+#                     printer.cut()
+
+#                 except Exception as e:
+#                     logger.error(f"Error sending SMS: {e}")
+#                     messages.error(request, f'Error sending SMS: {e}')
+#                 messages.success(request, 'Coffee berries weight updated successfully.')
+#                 return redirect('admin-dashboard')
+#             else:
+#                 messages.error(request, 'Farmer not found. Please enter a valid farmer name.')
+#     else:
+#         form = CoffeeBerriesForm()
+
+#     return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
 @csrf_protect
 def admin_dashboard(request):
     farmers = Farmer.objects.all()
@@ -120,10 +188,10 @@ def admin_dashboard(request):
     if request.method == 'POST':
         form = CoffeeBerriesForm(request.POST)
         if form.is_valid():
-            farmer_name = form.cleaned_data['farmer_name']
+            farmer_number = form.cleaned_data['farmer_number']
             weight = form.cleaned_data['weight']
             
-            farmer = Farmer.objects.filter(name=farmer_name).first()
+            farmer = Farmer.objects.filter(number=farmer_number).first()
             if farmer:
                 phone_number = farmer.phone
                 try:
@@ -148,11 +216,12 @@ def admin_dashboard(request):
                     time = current_datetime.strftime('%H:%M')
                     date = current_datetime.date()
 
-                    #try:                    
-                        #send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of coffee berries. Your total coffee weight is {farmer_total_weight} kgs.", [phone_number])
-                    #except Exception as e:
-                        #logger.error(f"Error sending SMS: {e}")
-                        #messages.error(request, f'Error sending SMS: {e}')
+                    # Uncomment the SMS sending code if you want to use it
+                    # try:                    
+                    #     send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of coffee berries. Your total coffee weight is {farmer_total_weight} kgs.", [phone_number])
+                    # except Exception as e:
+                    #     logger.error(f"Error sending SMS: {e}")
+                    #     messages.error(request, f'Error sending SMS: {e}')
                     
                     # Print the receipt
                     printer = Usb(0x0fe6, 0x811e, in_ep=0x82, out_ep=0x01)
@@ -176,7 +245,7 @@ def admin_dashboard(request):
                 messages.success(request, 'Coffee berries weight updated successfully.')
                 return redirect('admin-dashboard')
             else:
-                messages.error(request, 'Farmer not found. Please enter a valid farmer name.')
+                messages.error(request, 'Farmer not found. Please enter a valid farmer number.')
     else:
         form = CoffeeBerriesForm()
 

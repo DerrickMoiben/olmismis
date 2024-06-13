@@ -31,5 +31,5 @@ class FarmerForm(forms.ModelForm):
         return cleaned_data
 
 class CoffeeBerriesForm(forms.Form):
-    farmer_name = forms.CharField(label="Farmer's name", max_length=100)
+    farmer_number = forms.CharField(label="Farmer's number", max_length=100)
     weight = forms.FloatField(label="Coffee berries weight (kg)", initial=0.0)
