@@ -123,14 +123,18 @@
         <button type="submit">Search</button>
     </form>
     <h2>All Farmers</h2>
-    <a href="{% url 'admin-dashboard' %}" class="btn-primary">Back</a>
+    <a href="{% url 'admin' %}" class="btn-primary">Back</a>
     {% if farmers %}
         <table>
             <thead>
                 <tr>
                     <th>Number</th>
                     <th>Name</th>
+                    <th>Phone</th>
+                    <th>Location</th>
+                    <th>ID</th>
                     <th>Coffee Weight (kg)</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -138,7 +142,16 @@
                 <tr>
                     <td>{{farmer.number }}</td>
                     <td>{{ farmer.name }}</td>
+                    <td>{{ farmer.phone }}</td>
+                    <td>{{ farmer.location }}</td>
+                    <td>{{ farmer.id_number}}</td>
                     <td>{{ farmer.coffee_weight }}</td>
+                    <td>
+                        <form action="{% url 'delete-farmer' farmer.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-button">Delete</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
                 {% if messages %}
@@ -151,6 +164,7 @@
             </tbody>
         </table>
         <p>Total coffee weight: {{ total_coffee_weight }} kg</p>
+        <a href="{%url 'print-farmer-report' %}" class="btn">Print Report</a>
     {% else %}
         <p>No farmers found.</p>
     {% endif %}

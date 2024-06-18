@@ -5,7 +5,7 @@ class Farmer(models.Model):
     number = models.CharField(max_length=100, null=True, blank=True)
     id_number = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=18)
     location = models.CharField(max_length=100)
     is_number = models.BooleanField(default=False)
 

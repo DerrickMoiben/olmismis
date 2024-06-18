@@ -14,6 +14,9 @@ import json
 logger = logging.getLogger(__name__)
 
 
+# def admin(request):
+#     return render(request, 'admin.html')
+
 def land_page(request):
     return render(request, 'index.html')
 
@@ -47,23 +50,49 @@ def user_login(request):
     return render(request, 'registration/login.html', {'form': form})
 
 
+# @csrf_protect
+# def register_new_farmer(request):
+#     if request.method == 'POST':
+#         form = FarmerForm(request.POST)
+#         if form.is_valid():
+#             farmer = form.save(commit=False)
+#             farmer.number = str(Farmer.objects.count() + 1)
+#             farmer.save()
+#             messages.success(request, 'Farmer registered successfully.')
+#             #send sms
+#             send_sms(f"Dear {farmer.name}, you have been registered successfully at OLMISMIS FCS Ltd. Your  number is {farmer.number}.", [farmer.phone])
+#             return redirect('enter-weight', farmer_id=farmer.id)
+#         else:
+#             messages.error(request, '')
+#     else:
+#         form = FarmerForm()
+#     return render(request, 'admin/register_farmer.html', {'form': form})
+
 @csrf_protect
 def register_new_farmer(request):
     if request.method == 'POST':
         form = FarmerForm(request.POST)
         if form.is_valid():
             farmer = form.save(commit=False)
-            farmer.number = str(Farmer.objects.count() + 1)
+            farmer.number = f'{Farmer.objects.count() + 1:03}'
             farmer.save()
             messages.success(request, 'Farmer registered successfully.')
-            #send sms
-            send_sms(f"Dear {farmer.name}, you have been registered successfully at OLMISMIS FCS Ltd. Your  number is {farmer.number}.", [farmer.phone])
+            try:
+                send_sms(f"Dear {farmer.name}, you have been registered successfully at OLMISMIS FCS Ltd. Your number is {farmer.number}.", [farmer.phone])
+            except Exception as e:
+                messages.warning(request, f'Failed to send SMS: {e}')
             return redirect('enter-weight', farmer_id=farmer.id)
         else:
-            messages.error(request, '')
+            # Form is not valid, display user-friendly error messages
+            error_messages = '\n'.join([f"{error}" for field, error in form.errors.items()])
+            messages.error(request, f'Failed to register farmer. Errors:\n{error_messages}')
+            return render(request, 'admin/register_farmer.html', {'form': form})
     else:
         form = FarmerForm()
+    
     return render(request, 'admin/register_farmer.html', {'form': form})
+
+
 
 @csrf_protect
 def enter_weight(request, farmer_id):
@@ -113,74 +142,6 @@ def enter_weight(request, farmer_id):
         'form': form
     })
 
-# @csrf_protect
-# def admin_dashboard(request):
-#     farmers = Farmer.objects.all()
-    
-#     if request.method == 'POST':
-#         form = CoffeeBerriesForm(request.POST)
-#         if form.is_valid():
-#             farmer_number = form.cleaned_data['farmer_name']
-#             weight = form.cleaned_data['weight']
-            
-#             farmer = Farmer.objects.filter(name=farmer_name).first()
-#             if farmer:
-#                 phone_number = farmer.phone
-#                 try:
-#                     field = Field.objects.get(farmer=farmer, field_name="Default Field Name")
-#                 except Field.DoesNotExist:
-#                     field = Field.objects.create(farmer=farmer, field_name="Default Field Name")
-                
-#                 coffee_berrie, created = CoffeeBerries.objects.get_or_create(field=field, defaults={'weight': weight})
-#                 if not created:
-#                     coffee_berrie.weight += weight  # Add the new weight to the existing weight
-#                     coffee_berrie.save()
-                    
-#                 # Calculate total coffee weight for the updated farmer
-#                 farmer_fields = Field.objects.filter(farmer=farmer)
-#                 farmer_total_weight = CoffeeBerries.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-#                 farmer.total_coffee_weight = farmer_total_weight
-#                 farmer.save()
-
-#                 try:
-#                     current_datetime = datetime.now()
-#                     formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
-#                     time = current_datetime.strftime('%H:%M')
-#                     date = current_datetime.date()
-
-#                     #try:                    
-#                         #send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of coffee berries. Your total coffee weight is {farmer_total_weight} kgs.", [phone_number])
-#                     #except Exception as e:
-#                         #logger.error(f"Error sending SMS: {e}")
-#                         #messages.error(request, f'Error sending SMS: {e}')
-                    
-#                     # Print the receipt
-#                     printer = Usb(0x0fe6, 0x811e, in_ep=0x82, out_ep=0x01)
-#                     printer.set(align='center', font='b', width=4, height=6)
-#                     printer.text("========================================\n")
-#                     printer.text("OLMISMIS FCS Ltd\n")
-#                     printer.text("========================================\n")
-#                     printer.text(f"Date: {date}\n")
-#                     printer.text(f"Time: {time}\n")
-#                     printer.text("========================================\n")
-#                     printer.text(f"Farmer Name: {farmer.name}\n")
-#                     printer.text(f"Farmer number: {farmer.number}\n")
-#                     printer.text(f"Weight of the Day: {weight} kgs\n")
-#                     printer.text(f"Total Coffee Weight: {farmer_total_weight} kgs\n")
-#                     printer.text("========================================\n\n\n")
-#                     printer.cut()
-
-#                 except Exception as e:
-#                     logger.error(f"Error sending SMS: {e}")
-#                     messages.error(request, f'Error sending SMS: {e}')
-#                 messages.success(request, 'Coffee berries weight updated successfully.')
-#                 return redirect('admin-dashboard')
-#             else:
-#                 messages.error(request, 'Farmer not found. Please enter a valid farmer name.')
-#     else:
-#         form = CoffeeBerriesForm()
-
-#     return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
 @csrf_protect
 def admin_dashboard(request):
     farmers = Farmer.objects.all()
@@ -253,8 +214,13 @@ def admin_dashboard(request):
 
 
 @csrf_protect
-def all_farmers(request):
-    farmers = Farmer.objects.all()
+def cashier_farmers(request):
+    search_query = request.GET.get('search', '')
+    if search_query:
+        farmers = Farmer.objects.filter(name__icontains=search_query)
+    else:
+        farmers = Farmer.objects.all()
+
     total_coffee_weight = 0
     for farmer in farmers:
         farmer_fields = farmer.field_set.all()
@@ -265,6 +231,7 @@ def all_farmers(request):
     context = {
         'farmers': farmers,
         'total_coffee_weight': total_coffee_weight,
+        'search_query': search_query,
     }
     return render(request, 'admin/all_farmers.html', context)
 @csrf_protect
