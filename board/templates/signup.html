@@ -15,7 +15,7 @@
 <body>
     <div class="container">
         <h2>Signup</h2>
-        <form method="POST" action="{% url 'cashier-signup' %}">
+        <form method="POST" action="{% url 'singup' %}">
             {% csrf_token %}
             {% if form.non_field_errors %}
                 <div class="error">
@@ -47,7 +47,7 @@
                 <button type="submit">Signup</button>
             </div>
         </form>
-        <a href="{% url 'cashier-login' %}">Already have an Account? Login</a>
+        <a href="{% url 'admin_login' %}">Already have an Account? Login</a>
     </div>
 </body>
 </html>

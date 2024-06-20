@@ -133,7 +133,7 @@ MEDIA_ROOT = BASE_DIR / 'static/images/media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = 'admin-dashboard'
+#LOGIN_REDIRECT_URL = 'admin-dashboard'
 
 if not DEBUG:
     # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
@@ -145,3 +145,7 @@ if not DEBUG:
 #TWILIO_ACCOUNT_SID = 'AC7d75c6f0926ceb59d78812213fee1b2b'
 #TWILIO_AUTH_TOKEN = '89db088f14571c11ac359bc974c00f8e'
 #TWILIO_PHONE_NUMBER = '+18288091189'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]

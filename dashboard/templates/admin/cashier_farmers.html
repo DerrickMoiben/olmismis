@@ -4,7 +4,9 @@
     <title>All Farmers</title>
     <style>
         form {
-            margin-top: 20px;
+            margin-left: 100px;
+            align-items: end;
+
         }
         input[type=text] {
             width: 20%;
@@ -118,12 +120,12 @@
     </style>
 </head>
 <body>
-    <form action="{% url 'all-farmers' %}" method="get">
-        <input type="text" name="search" placeholder="search farmer" value="{{ search_query }}">
+    <h2>Farmers List and milk weight</h2>
+    <a href="{% url 'cashier-dashboard' %}" class="btn-primary">Back</a>
+    <form action="{% url 'cashier-farmers' %}" method="get">
+        <input type="text" name="search" placeholder="search farmer" value="{{ search_farmer }}">
         <button type="submit">Search</button>
     </form>
-    <h2>All Farmers</h2>
-    <a href="{% url 'admin-dashboard' %}" class="btn-primary">Back</a>
     {% if farmers %}
         <table>
             <thead>

@@ -14,35 +14,32 @@ import json
 logger = logging.getLogger(__name__)
 
 
-# def admin(request):
-#     return render(request, 'admin.html')
-
 def land_page(request):
     return render(request, 'index.html')
 
 @csrf_protect
-def user_signup(request):
+def cashier_signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect('cashier-login')
     else:
         form = SignupForm()
     return render(request, 'registration/signup.html', {'form': form})
 
 @csrf_protect
-def user_login(request):
+def cashier_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            logger.info(f"Username: {username}, Password: {password}, User: {user}")
-            if user:
-                login(request, user)
-                return redirect('admin-dashboard')
+            cashier = authenticate(username=username, password=password)
+            logger.info(f"Username: {username}, Password: {password}, User: {cashier}")
+            if cashier:
+                login(request, cashier)
+                return redirect('cashier-dashboard')
             else:
                 logger.error("Authentication failed")
     else:
@@ -81,7 +78,7 @@ def register_new_farmer(request):
                 send_sms(f"Dear {farmer.name}, you have been registered successfully at OLMISMIS FCS Ltd. Your number is {farmer.number}.", [farmer.phone])
             except Exception as e:
                 messages.warning(request, f'Failed to send SMS: {e}')
-            return redirect('enter-weight', farmer_id=farmer.id)
+            return redirect('cashier-dashboard')
         else:
             # Form is not valid, display user-friendly error messages
             error_messages = '\n'.join([f"{error}" for field, error in form.errors.items()])
@@ -94,8 +91,8 @@ def register_new_farmer(request):
 
 
 
-@csrf_protect
-def enter_weight(request, farmer_id):
+#@csrf_protect
+#def enter_weight(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
     
     try:
@@ -143,7 +140,7 @@ def enter_weight(request, farmer_id):
     })
 
 @csrf_protect
-def admin_dashboard(request):
+def cashier_dashboard(request):
     farmers = Farmer.objects.all()
     
     if request.method == 'POST':
@@ -215,11 +212,12 @@ def admin_dashboard(request):
 
 @csrf_protect
 def cashier_farmers(request):
-    search_query = request.GET.get('search', '')
-    if search_query:
-        farmers = Farmer.objects.filter(name__icontains=search_query)
+    search_farmer = request.GET.get('search', '')
+    if search_farmer:
+        farmers = Farmer.objects.filter(name__icontains=search_farmer)
     else:
-        farmers = Farmer.objects.all()
+         farmers = Farmer.objects.all()
+
 
     total_coffee_weight = 0
     for farmer in farmers:
@@ -231,76 +229,6 @@ def cashier_farmers(request):
     context = {
         'farmers': farmers,
         'total_coffee_weight': total_coffee_weight,
-        'search_query': search_query,
+        'search_query': search_farmer,
     }
-    return render(request, 'admin/all_farmers.html', context)
-@csrf_protect
-def delete_farmer(request, farmer_id):
-    farmer = get_object_or_404(Farmer, id=farmer_id)
-    farmer.delete()
-    messages.success(request, 'Farmer deleted successfully.')
-    return redirect('all-farmers')
-
-
-
-@csrf_protect
-def print_farmer_report(request):
-    try:
-        farmers = Farmer.objects.all()
-        total_coffee_weight = 0
-
-        # Calculate coffee weights for each farmer
-        for farmer in farmers:
-            farmer_fields = farmer.field_set.all()
-            farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
-            farmer.coffee_weight = farmer_coffee_weight
-            total_coffee_weight += farmer_coffee_weight
-
-        # Prepare context for rendering
-        context = {
-            'farmers': farmers,
-            'total_coffee_weight': total_coffee_weight,
-        }
-
-        # Initialize the printer
-        printer = Usb(0x0fe6, 0x811e, in_ep=0x82, out_ep=0x01)
-
-        try:
-            # Set text style and alignment
-            printer.set(align='center', font='b', width=4, height=6)
-
-            # Print header
-            printer.text("========================================\n")
-            printer.text("OLMISMIS FCS Ltd\n")
-            printer.text("========================================\n")
-            printer.text("Farmers Report\n")
-            printer.text("========================================\n")
-
-            # Print each farmer's details
-            for farmer in farmers:
-                printer.text(f"Farmer Name: {farmer.name}\n")
-                printer.text(f"Farmer Number: {farmer.number}\n")
-                printer.text(f"Total Coffee Weight: {farmer.coffee_weight} kgs\n")
-                printer.text("========================================\n")
-
-            # Print total coffee weight
-            printer.text(f"Total Coffee Weight: {total_coffee_weight} kgs\n")
-            printer.text("========================================\n\n\n")
-            printer.cut()
-
-            messages.success(request, 'Report printed successfully.')
-
-        except Exception as e:
-            messages.error(request, f'Error printing report: {e}')
-
-        finally:
-            # Close the printer
-            try:
-                printer.close()
-            except Exception as e:
-                messages.error(request, f'Error closing printer: {e}')
-
-    except Exception as e:
-        messages.error(request, f'Error fetching data: {e}')
-
-    return render(request, 'admin/all_farmers.html', context)
+    return render(request, 'admin/cashier_farmers.html', context)
