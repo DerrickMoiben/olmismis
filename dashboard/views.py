@@ -174,12 +174,12 @@ def cashier_dashboard(request):
                     time = current_datetime.strftime('%H:%M')
                     date = current_datetime.date()
 
-                    # Uncomment the SMS sending code if you want to use it
-                    # try:                    
-                    #     send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of coffee berries. Your total coffee weight is {farmer_total_weight} kgs.", [phone_number])
-                    # except Exception as e:
-                    #     logger.error(f"Error sending SMS: {e}")
-                    #     messages.error(request, f'Error sending SMS: {e}')
+                    #Uncomment the SMS sending code if you want to use it
+                    try:                    
+                        send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of coffee berries. Your total coffee weight is {farmer_total_weight} kgs.", [phone_number])
+                    except Exception as e:
+                        logger.error(f"Error sending SMS: {e}")
+                        messages.error(request, f'Error sending SMS: {e}')
                     
                     # Print the receipt
                     printer = Usb(0x0fe6, 0x811e, in_ep=0x82, out_ep=0x01)
@@ -201,7 +201,7 @@ def cashier_dashboard(request):
                     logger.error(f"Error sending SMS: {e}")
                     messages.error(request, f'Error sending SMS: {e}')
                 messages.success(request, 'Coffee berries weight updated successfully.')
-                return redirect('admin-dashboard')
+                return redirect('cashier-dashboard')
             else:
                 messages.error(request, 'Farmer not found. Please enter a valid farmer number.')
     else:

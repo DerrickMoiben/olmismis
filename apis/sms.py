@@ -5,9 +5,9 @@ africastalking.initialize(
 )
 sms = africastalking.SMS
 def send_sms(message, phone_numbers): 
-    sender = "SOKO GARDEN"
+    sender = "OLMISMISFCS"
     try:
-        response = sms.send(message, phone_numbers)
+        response = sms.send(message, phone_numbers, sender)
         print(response)
     except Exception as error:
         print("Error is ", error)
