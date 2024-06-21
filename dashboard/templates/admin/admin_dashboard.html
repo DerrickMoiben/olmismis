@@ -12,11 +12,12 @@
             <li><a href="{% url 'all-farmers' %}">All Farmers</a></li>
             <li><a href="{% url 'register-new-farmer' %}">Register New Farmer</a></li>
             <li><a href="{% url 'print-farmer-report' %}">Print Report</a></li>
+            <li><a href="{% url 'announcements' %}">Announcement</a></li>
             <li><a href="{% url 'land_page' %}">Home</a></li>
         </ul>
     </nav>
     <div class="container">
-        <h1>Welcome to Admin Dashboard</h1>
+        <h1>Cashier Dashboard</h1>
         <form method="post" class="custom-form">
             <h2>Update Coffee Weight</h2>
             {% csrf_token %}

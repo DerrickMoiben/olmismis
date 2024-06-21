@@ -66,6 +66,25 @@
                 });
                     
                 console.log(data);
+
+                fetch ("{ url 'register-new-farmer' }", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.status == 'success') {
+                        alert('Farmer registered successfully');
+                        window.location.href = '/admin/dashboard';
+                    } else {
+                        alert('Failed to register farmer');
+                    }
+                })
             });
         }
     </script>

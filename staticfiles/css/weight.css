@@ -1,0 +1,124 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+h1 {
+    color: #111010;
+    margin-bottom: 20px;
+}
+
+p {
+    color: #1b1a1a;
+}
+
+/* Form styles */
+.coffee-form {
+    margin-top: 20px;
+}
+
+.coffee-form input[type="text"],
+.coffee-form input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
+.coffee-form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+}
+
+.coffee-form button:hover {
+    background-color: #45a049;
+}
+
+/* Back link styles */
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #0000ff; /* Blue color */
+    border: 1px solid #0000ff; /* Blue border */
+    padding: 8px 16px;
+    border-radius: 3px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.back-link:hover {
+    background-color: #0000ff; /* Blue background on hover */
+    color: white;
+}
+
+/* Message Styles */
+.message-container {
+    margin-top: 20px;
+    max-width: 400px;
+}
+
+.messages {
+    list-style-type: none;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+}
+.messages li {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Styles */
+@media (max-width: 767px) {
+    /* Styles for small screens (mobile devices) */
+    .container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .coffee-form input[type="text"],
+    .coffee-form input[type="number"],
+    .coffee-form button {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    /* Styles for medium screens (tablets) */
+    .container {
+        max-width: 400px;
+    }
+}
+
+@media (min-width: 1200px) {
+    /* Styles for large screens (desktops) */
+    .container {
+        max-width: 400px;
+    }
+}
