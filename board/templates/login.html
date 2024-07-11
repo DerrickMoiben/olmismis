@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}"/>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container bg-primar">
+        <h2 style="text-align: center;">Login</h2>
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div{% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form id="login" method="post">
+            {% csrf_token %}
+            <label><b>User Name</b></label>
+            <input type="text" name="username" id="username" placeholder="Username" required>
+            <label><b>Password</b></label>
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <div style="text-align: center;">
+                <button type="submit" class="btn bg-sucess">Login</button>
+            </div>
+            <p>Don't have an account<a href="{% url 'singup' %}">Sign up</a></p>
+        </form>
+    </div>
+</body>
+</html>

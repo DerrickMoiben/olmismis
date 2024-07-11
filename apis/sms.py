@@ -26,7 +26,10 @@ def write_unsent_messages(file_path, data):
     
 def send_sms(message, phone_numbers):
     """The function is used to send sms through the africastalking api and also attempts to send the previously unsent messages"""
-    file_path = 'apis/json'
+
+    # The json file path and sender name
+    file_path = 'apis/messages.json'
+    sender = "OLMISMISFCS"
 
     # Create a message object
     f_message = {"message": message, "phone_numbers": phone_numbers}
@@ -36,28 +39,32 @@ def send_sms(message, phone_numbers):
 
     # Append the new message to the list of unsent messages
     data.append(f_message)
+    print(data)
 
     try:
-        response = sms.send(message, phone_numbers)
-        if response['status'] == 'Success':
+        response = sms.send(message, phone_numbers, sender)
+        if response['SMSMessageData']['Recipients'][0]['status'] == 'Success':
             data.remove(f_message)
-            n_sent = data
-        else:
-            n_sent = data[:-1]
+        elif response['SMSMessageData']['Recipients'][0]['status'] == 'InsufficientBalance':
+            write_unsent_messages(file_path, data)
+            return "Insufficient balance"
 
-        for msg in n_sent:
+        for msg in data:
+            a = msg['message']
+            b = msg['phone_numbers']
             try:
-                response = sms.send(msg['message'], msg['phone_numbers'])
-                if response['status'] == 'Success':
-                    print(response)
+                response = sms.send(a, b, sender)
+
+                if response['SMSMessageData']['Recipients'][0]['status'] == 'Success':
                     data.remove(msg)
                 else:  
-                    pass
+                    print(f'The unsent message was not deleted: {a}')
+
             except Exception as e:
                 pass
                 
-    except Exception as error:
-        print("Error is ", error)
+    except Exception as e:
+        pass
 
     # Write the unsent messages back to the file
     write_unsent_messages(file_path, data)

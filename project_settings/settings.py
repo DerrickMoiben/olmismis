@@ -167,12 +167,14 @@ SECRET_KEY = 'django-insecure-m&l5w_)cab(q)-70ljt-^b)4!#4ikt&z7=-r710p#cp0858=48
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'olmismis.onrender.com']
 
 # Application definition
 
 INSTALLED_APPS = [
     'dashboard',
+    'board',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

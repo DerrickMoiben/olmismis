@@ -29,6 +29,14 @@
         <form method="post" class="custom-form" id="form">
             {% csrf_token %}
 
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
             <label for="">Name</label>
             <input type="text" placeholder="Enter your full name" name="name">
             <label for="phone">Phone</label>
@@ -42,15 +50,8 @@
             <label for="">Id number</label>
             <input type="number" name="id_number" id="" placeholder="Enter your id number">
             <button type="submit" class="btn btn-primary">Register</button>
-            <a href="{% url 'admin-dashboard' %}">Back</a>
+            <a href="{% url 'cashier-dashboard' %}">Back</a>
         </form>
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
     </div>
 
     <script>

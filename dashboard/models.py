@@ -1,5 +1,7 @@
+# from random import choices
 from django.db import models
-
+from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Farmer(models.Model):
     number = models.CharField(max_length=100, null=True, blank=True)
@@ -20,6 +22,10 @@ class Field(models.Model):
         return self.field_name
     
 class CoffeeBerries(models.Model):
+    BERRY_TYPES = [
+        ('cherry', 'Cherry'),
+        ('mbuni', 'Mbuni'),
+    ]
     field = models.ForeignKey(Field, on_delete=models.CASCADE)
-    weight = models.FloatField(null=False, blank=False)
-    
+    weight = models.FloatField()
+    berry_type = models.CharField(max_length=10, choices=BERRY_TYPES, default=True)

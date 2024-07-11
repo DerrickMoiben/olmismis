@@ -1,0 +1,306 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Board</title>
+  <!-- <link rel="stylesheet" href="{% static 'boardcss/index.css' %}"> -->
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: #37b948;
+      color: #020101;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+    }
+
+    nav ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: end;
+    }
+
+    nav ul li {
+      margin-right: 20px;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      color: #0c0a0a;
+    }
+
+    /* Board Members Section */
+    .board-members {
+      padding: 20px;
+      background-color: #fff;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .board-member-slider {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .board-member-slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    .board-member-card {
+      flex: 0 0 200px;
+      margin-right: 20px;
+      background-color: #f1f1f1;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      scroll-snap-align: start;
+      transition: transform 0.3s ease;
+    }
+
+    .board-member-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .board-member-card img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .board-member-card h3 {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .board-member-card p {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* Search Farmer Section */
+    .search-farmer {
+      padding: 20px;
+      background-color: #fff;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-farmer form {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .search-farmer input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 300px;
+      margin-right: 10px;
+    }
+
+    .search-farmer button {
+      padding: 10px 20px;
+      background-color: #37b948;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-farmer button:hover {
+      background-color: #2e9b3b;
+    }
+
+    .search-farmer h3 {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .search-farmer ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .search-farmer li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      background-color: #fff;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-farmer li:hover {
+      background-color: #f5f5f5;
+    }
+
+    .search-farmer li a {
+      color: #37b948;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .search-farmer li a:hover {
+      text-decoration: underline;
+    }
+
+    /* Dashboard Section */
+    .dashboard {
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-widgets {
+      display: flex;
+      justify-content: center;
+    }
+
+    .widget {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .widget h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #37b948;
+    }
+
+    .widget p {
+      font-size: 18px;
+      color: #555;
+    }
+
+    /* Footer Styles */
+    footer {
+      background-color: #37b948;
+      color: #fff;
+      padding: 10px 20px;
+      text-align: center;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="{% url 'land_page' %}">Home</a></li>
+        <li><a href="{% url 'all-farmers' %}">Farmers</a></li>
+        <li><a href="{% url 'print-farmer-report' %}">Reports</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="board-members">
+      <h2>Board Members</h2>
+      <div class="board-member-slider">
+        <div class="board-member-card">
+          <img src="{% static 'boardimages/chairman.jpg' %}" alt="Chairman">
+          <h3>Wesley Too</h3>
+          <p>Chairman</p>
+        </div>
+        <div class="board-member-card">
+          <img src="{% static 'boardimages/vice-chairman.jpg' %}" alt="Vice Chairman">
+          <h3>James Melly</h3>
+          <p>Vice Chairman</p>
+        </div>
+        <div class="board-member-card">
+          <img src="{% static 'boardimages/secretary.jpg' %}" alt="Secretary">
+          <h3>Paul Too</h3>
+          <p>Secretary</p>
+        </div>
+        <div class="board-member-card">
+          <img src="{% static 'boardimages/treasurer.jpg' %}" alt="Treasurer">
+          <h3>Sammy Cheruiyot</h3>
+          <p>Treasurer</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="search-farmer">
+      <h2>Search and Edit Farmer</h2>
+      <form method="GET" action="{% url 'admin_dashboard' %}">
+        <input type="text" name="search_query" placeholder="Enter farmer's name" value="{{ search_query }}">
+        <button type="submit">Search</button>
+      </form>
+
+      {% if search_query %}
+        {% if farmers %}
+          <h3>Search Results:</h3>
+          <ul>
+            {% for farmer in farmers %}
+              <li>
+                {{ farmer.name }} - {{ farmer.number }}
+                <a href="{% url 'edit_farmer' farmer.id %}">Edit</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No farmers found for "{{ search_query }}"</p>
+        {% endif %}
+      {% endif %}
+    </section>
+
+    <section class="dashboard">
+      <h2>Dashboard</h2>
+      <div class="dashboard-widgets">
+        <div class="widget">
+          <h3>Total Farmers</h3>
+          <p>Total Farmers: {{ total_farmers }}</p>
+          <p>Total Coffee Weight: {{ total_coffee_weight }}</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Olmismis Farmers Co-operative Society</p>
+  </footer>
+</body>
+</

@@ -13,6 +13,7 @@ import win32print
 import win32api
 from django.conf import settings
 from apis.sms import send_sms
+from django.utils.timezone import now
 
 logger = logging.getLogger(__name__)
 
@@ -21,21 +22,21 @@ def land_page(request):
     return render(request, 'index.html')
 
 @csrf_protect
-def user_signup(request):
+def cashier_signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Sign up successfully')
-            return redirect('login')
+            return redirect('cashier-login')
         else:
-            messages.error('Sign up was unseccefull')
+            messages.error(request, 'Sign up was unseccefull')
     else:
         form = SignupForm()
     return render(request, 'registration/signup.html', {'form': form})
 
 @csrf_protect
-def user_login(request):
+def cashier_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -45,7 +46,7 @@ def user_login(request):
             logger.info(f"Username: {username}, Password: {password}, User: {user}")
             if user:
                 login(request, user)
-                return redirect('admin-dashboard')
+                return redirect('cashier-dashboard')
             else:
                 logger.error("Authentication failed")
     else:
@@ -67,8 +68,14 @@ def register_new_farmer(request):
             farmer.phone = f_phone
             farmer.save()
             messages.success(request, 'Farmer registered successfully.')
+            
             try:
-                send_sms(f"Dear {farmer.name}, you have been registered successfully at OLMISMIS Dairy FCS Ltd. Your number is {farmer.number}.", [farmer.phone])
+                response = send_sms(f"Dear {farmer.name}, you have been registered successfully at OLMISMIS Dairy FCS Ltd. Your number is {farmer.number}.", [farmer.phone])
+                if response == "Insufficient balance":
+                    messages.warning(request, 'Failed to send SMS: Insufficient balance.')
+                else:
+                    pass
+
             except Exception as e:
                 messages.warning(request, f'Failed to send SMS: {e}')
             return render(request, 'admin/register_farmer.html')
@@ -82,8 +89,8 @@ def register_new_farmer(request):
     
     return render(request, 'admin/register_farmer.html', {'form': form})
 
-@csrf_protect
-def enter_weight(request, farmer_id):
+#@csrf_protect
+#def enter_weight(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
     
     try:
@@ -132,41 +139,22 @@ def enter_weight(request, farmer_id):
     })
 
 
-@csrf_protect
-def all_farmers(request):
-    farmers = Farmer.objects.all()
-    total_coffee_weight = 0
-    for farmer in farmers:
-        farmer_fields = farmer.field_set.all()
-        farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
-        farmer.coffee_weight = farmer_coffee_weight
-        total_coffee_weight += farmer_coffee_weight
 
-    context = {
-        'farmers': farmers,
-        'total_coffee_weight': total_coffee_weight,
-    }
-    return render(request, 'admin/all_farmers.html', context)
-@csrf_protect
-def delete_farmer(request, farmer_id):
-    farmer = get_object_or_404(Farmer, id=farmer_id)
-    farmer.delete()
-    messages.success(request, 'Farmer deleted successfully.')
-    return redirect('all-farmers')
-
+""" HII NI YA KWANZA MZEE INAFANYA VIZURI BILA HIO STAUFF YA MBUNI NA CHERRY"""
 
 # @csrf_protect
-# def admin_dashboard(request):
+# def cashier_dashboard(request):
 #     farmers = Farmer.objects.all()
     
 #     if request.method == 'POST':
 #         form = CoffeeBerriesForm(request.POST)
 #         if form.is_valid():
-#             farmer_name = form.cleaned_data['farmer_name']
+#             farmer_number = form.cleaned_data['farmer_number']
 #             weight = form.cleaned_data['weight']
             
-#             farmer = Farmer.objects.filter(name=farmer_name).first()
+#             farmer = Farmer.objects.filter(number=farmer_number).first()
 #             if farmer:
+#                 phone_number = farmer.phone
 #                 try:
 #                     field = Field.objects.get(farmer=farmer, field_name="Default Field Name")
 #                 except Field.DoesNotExist:
@@ -188,6 +176,13 @@ def delete_farmer(request, farmer_id):
 #                     formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
 #                     time = current_datetime.strftime('%H:%M')
 #                     date = current_datetime.date()
+
+#                     try:
+#                         send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed  {weight} kgs of Cofffe. You Total weight is {farmer_total_weight} kgs", [phone_number])
+#                     except Exception as e:
+#                         logger.error(f"Error seding sms: {e}")
+#                         messages.error(request, f'Error sending Sms: {e}')
+
 
 #                     # Construct the receipt content
 #                     content = "========================================\n"
@@ -226,24 +221,24 @@ def delete_farmer(request, farmer_id):
 #                     logger.error(f"Error printing receipt: {e}")
 #                     messages.error(request, f'Error printing receipt: {e}')
 #                 messages.success(request, 'Coffee berries weight updated successfully.')
-#                 return redirect('admin-dashboard')
+#                 return redirect('cashier-dashboard')
 #             else:
-#                 messages.error(request, 'Farmer not found. Please enter a valid farmer name.')
+#                 messages.error(request, 'Farmer not found. Please enter a valid farmer number.')
 #     else:
 #         form = CoffeeBerriesForm()
 
 #     return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
 
 
-
 @csrf_protect
-def admin_dashboard(request):
+def cashier_dashboard(request):
     farmers = Farmer.objects.all()
     
     if request.method == 'POST':
         form = CoffeeBerriesForm(request.POST)
         if form.is_valid():
             farmer_number = form.cleaned_data['farmer_number']
+            berry_type = form.cleaned_data['berry_type']
             weight = form.cleaned_data['weight']
             
             farmer = Farmer.objects.filter(number=farmer_number).first()
@@ -254,15 +249,17 @@ def admin_dashboard(request):
                 except Field.DoesNotExist:
                     field = Field.objects.create(farmer=farmer, field_name="Default Field Name")
                 
-                coffee_berrie, created = CoffeeBerries.objects.get_or_create(field=field, defaults={'weight': weight})
+                coffee_berrie, created = CoffeeBerries.objects.get_or_create(field=field, berry_type=berry_type, defaults={'weight': weight})
                 if not created:
-                    coffee_berrie.weight += weight  # Add the new weight to the existing weight
+                    coffee_berrie.weight += weight
                     coffee_berrie.save()
                     
-                # Calculate total coffee weight for the updated farmer
                 farmer_fields = Field.objects.filter(farmer=farmer)
-                farmer_total_weight = CoffeeBerries.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-                farmer.total_coffee_weight = farmer_total_weight
+                cherry_weight = CoffeeBerries.objects.filter(field__in=farmer_fields, berry_type='cherry').aggregate(Sum('weight'))['weight__sum'] or 0
+                mbuni_weight = CoffeeBerries.objects.filter(field__in=farmer_fields, berry_type='mbuni').aggregate(Sum('weight'))['weight__sum'] or 0
+                total_coffee_weight = cherry_weight + mbuni_weight
+
+                farmer.total_coffee_weight = total_coffee_weight
                 farmer.save()
 
                 try:
@@ -271,14 +268,12 @@ def admin_dashboard(request):
                     time = current_datetime.strftime('%H:%M')
                     date = current_datetime.date()
 
-                    #Uncomment the SMS sending code if you want to use it
-                    try:                    
-                        send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of milk. Your total milk weight is {farmer_total_weight} kgs.", [phone_number])
+                    try:
+                        send_sms(f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of {berry_type} coffee. Your total coffee weight is {total_coffee_weight} kgs.", [phone_number])
                     except Exception as e:
                         logger.error(f"Error sending SMS: {e}")
                         messages.error(request, f'Error sending SMS: {e}')
-                    
-                    # Construct the receipt content
+
                     content = "========================================\n"
                     content += "OLMISMIS FCS Ltd\n"
                     content += "========================================\n"
@@ -288,25 +283,19 @@ def admin_dashboard(request):
                     content += f"Farmer Name: {farmer.name}\n"
                     content += f"Farmer number: {farmer.number}\n"
                     content += f"Weight of the Day: {weight} kgs\n"
-                    content += f"Total Milk Weight: {farmer_total_weight} kgs\n"
+                    content += f"Total Coffee Weight: {total_coffee_weight} kgs\n"
+                    content += f"Type of Coffee: {berry_type}\n"
+                    content += f"Served by: {request.user.username}\n"
                     content += "========================================\n\n\n"
 
-                    # ESC/POS command to cut the paper
-                    cut_paper = "\x1d\x56\x41\x10"  # Full cut
+                    cut_paper = "\x1d\x56\x41\x10"
                     full_content = content + cut_paper
 
-                    # Set the printer name
                     printer_name = "POS Printer 80250 Series"
-
-                    # Open the printer and start a document
                     printer_handle = win32print.OpenPrinter(printer_name)
                     job_handle = win32print.StartDocPrinter(printer_handle, 1, ("Receipt", None, "RAW"))
                     win32print.StartPagePrinter(printer_handle)
-
-                    # Write the content to the printer
                     win32print.WritePrinter(printer_handle, full_content.encode('utf-8'))
-
-                    # End the page and document, then close the printer
                     win32print.EndPagePrinter(printer_handle)
                     win32print.EndDocPrinter(printer_handle)
                     win32print.ClosePrinter(printer_handle)
@@ -315,76 +304,16 @@ def admin_dashboard(request):
                     logger.error(f"Error printing receipt: {e}")
                     messages.error(request, f'Error printing receipt: {e}')
                 messages.success(request, 'Coffee berries weight updated successfully.')
-                return redirect('admin-dashboard')
+                return redirect('cashier-dashboard')
             else:
                 messages.error(request, 'Farmer not found. Please enter a valid farmer number.')
     else:
         form = CoffeeBerriesForm()
-
     return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
+    
 
 
-@csrf_protect
-def print_farmer_report(request):
-    try:
-        farmers = Farmer.objects.all()
-        total_coffee_weight = 0
-
-        # Calculate coffee weights for each farmer
-        for farmer in farmers:
-            farmer_fields = farmer.field_set.all()
-            farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
-            farmer.coffee_weight = farmer_coffee_weight
-            total_coffee_weight += farmer_coffee_weight
-
-        # Prepare context for rendering
-        context = {
-            'farmers': farmers,
-            'total_coffee_weight': total_coffee_weight,
-        }
-
-        # Set the printer name
-        printer_name = "EPSON L3250 Series"
-
-        # Construct the content to be printed
-        content = "========================================\n"
-        content += "OLMISMIS FCS Ltd\n"
-        content += "========================================\n"
-        content += "Farmers Report\n"
-        content += "========================================\n"
-        for farmer in farmers:
-            content += f"Farmer Name: {farmer.name}\n"
-            content += f"Farmer Number: {farmer.number}\n"
-            content += f"Total Coffee Weight: {farmer.coffee_weight} kgs\n"
-            content += "========================================\n"
-        content += f"Total Coffee Weight: {total_coffee_weight} kgs\n"
-        content += "========================================\n\n\n"
-
-        try:
-            # Open the printer and start a document
-            printer_handle = win32print.OpenPrinter(printer_name)
-            job_handle = win32print.StartDocPrinter(printer_handle, 1, ("Farmers Report", None, "RAW"))
-            win32print.StartPagePrinter(printer_handle)
-
-            # Write the content to the printer
-            win32print.WritePrinter(printer_handle, content.encode('utf-8'))
-
-            # End the page and document, then close the printer
-            win32print.EndPagePrinter(printer_handle)
-            win32print.EndDocPrinter(printer_handle)
-            win32print.ClosePrinter(printer_handle)
-
-            messages.success(request, 'Report printed successfully.')
-
-        except Exception as e:
-            messages.error(request, f'Error printing report: {e}')
-
-    except Exception as e:
-        messages.error(request, f'Error fetching data: {e}')
-
-    return render(request, 'admin/all_farmers.html', context)
-
-        
+@csrf_protect        
 def announcements(request):
     if request.method == 'POST':
         form = AnnouncementsForm(request.POST)
@@ -404,3 +333,29 @@ def announcements(request):
         form = AnnouncementsForm()
 
     return render(request, 'admin/announcements.html', {'form': form})
+
+@csrf_protect
+def cashier_farmers(request):
+    search_farmer = request.GET.get('search', '')
+    if search_farmer:
+        farmers = Farmer.objects.filter(name__icontains=search_farmer)
+    else:
+         farmers = Farmer.objects.all()
+
+
+    total_coffee_weight = 0
+    #daily_totals = CoffeeBerries.objects.filter(date_collected=now().date()).aggregate(total=Sum('weight'))['total'] or 0
+
+    for farmer in farmers:
+        farmer_fields = farmer.field_set.all()
+        farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
+        farmer.coffee_weight = farmer_coffee_weight
+        total_coffee_weight += farmer_coffee_weight
+
+    context = {
+        'farmers': farmers,
+        'total_coffee_weight': total_coffee_weight,
+        #'daily_totals': daily_totals,
+        'search_query': search_farmer,
+    }
+    return render(request, 'admin/cashier_farmers.html', context)

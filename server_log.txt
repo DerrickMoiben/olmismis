@@ -1,12 +1,24 @@
 Watching for file changes with StatReloader
-[15/Jun/2024 09:18:30] "GET / HTTP/1.1" 200 4453
-[15/Jun/2024 09:18:30] "GET / HTTP/1.1" 200 4453
-[15/Jun/2024 09:18:31] "GET /static/images/coffee_product.png HTTP/1.1" 304 0
-[15/Jun/2024 09:18:31] "GET /static/images/mala.png HTTP/1.1" 304 0
-[15/Jun/2024 09:18:31] "GET /static/images/woman1.png HTTP/1.1" 200 585239
-[15/Jun/2024 09:18:31] "GET /static/images/man.png HTTP/1.1" 200 67650
-[15/Jun/2024 09:18:31] "GET /static/images/twitter.png HTTP/1.1" 200 40201
-[15/Jun/2024 09:18:31] "GET /static/images/facebook.png HTTP/1.1" 200 19752
-[15/Jun/2024 09:18:38] "GET /dashboard/login/ HTTP/1.1" 200 1053
-[15/Jun/2024 09:18:42] "POST /dashboard/login/ HTTP/1.1" 302 0
-[15/Jun/2024 09:18:42] "GET /dashboard/admin-dashboard/ HTTP/1.1" 200 1320
+[10/Jul/2024 22:39:51] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:39:51] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:39:51] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:39:51] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:39:52] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:39:52] "GET / HTTP/1.1" 200 4551
+Not Found: /favicon.ico
+WARNING:django.request:Not Found: /favicon.ico
+[10/Jul/2024 22:39:53] "GET /favicon.ico HTTP/1.1" 404 2454
+[10/Jul/2024 22:39:55] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:39:55] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:39:55] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:39:55] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:40:35] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:40:35] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:40:44] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:40:44] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:40:52] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:40:52] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:56:55] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:56:55] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:57:23] "GET / HTTP/1.1" 200 4551
+[10/Jul/2024 22:57:23] "GET / HTTP/1.1" 200 4551

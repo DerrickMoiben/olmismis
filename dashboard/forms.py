@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Farmer
+from .models import Farmer, CoffeeBerries
 
 
 
@@ -32,8 +32,10 @@ class FarmerForm(forms.ModelForm):
 
 class CoffeeBerriesForm(forms.Form):
     farmer_number = forms.CharField(label="Farmer's number", max_length=100)
+    berry_type = forms.ChoiceField(label="Berry Type", choices=[('cherry', 'Cherry'), ('mbuni', 'Mbuni')])
     weight = forms.FloatField(label="Coffee berries weight (kg)", initial=0.0)
 
+    
 class AnnouncementsForm(forms.Form):
     message = forms.CharField(
         label='Message',

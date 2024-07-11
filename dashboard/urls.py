@@ -3,13 +3,12 @@ from . import views
 
 
 urlpatterns = [
-    path('login/', views.user_login,  name='login'),
-    path('signup/', views.user_signup, name='signup'),
-    path('admin-dashboard/', views.admin_dashboard, name='admin-dashboard'),
+    # path('admin/', views.admin, name='admin'),
+    path('cashier-login/', views.cashier_login,  name='cashier-login'),
+    path('cashier-signup/', views.cashier_signup, name='cashier-signup'),
+    path('cashier-dashboard/', views.cashier_dashboard, name='cashier-dashboard'),
     path('register-new-farmer/', views.register_new_farmer, name='register-new-farmer'),
-    path('all-farmers/', views.all_farmers, name='all-farmers'),
-    path('enter-weight/<int:farmer_id>/', views.enter_weight, name='enter-weight'),
-    path('delete/<int:farmer_id>/', views.delete_farmer, name='delete-farmer'),
-    path('print-farmer-report/', views.print_farmer_report, name='print-farmer-report'),
+    path('cashier-farmers/', views.cashier_farmers, name='cashier-farmers'),
+    #path('enter-weight/<int:farmer_id>/', views.enter_weight, name='enter-weight'),
     path('announcements/', views.announcements, name='announcements'),
 ]

@@ -21,29 +21,26 @@ echo Waiting for server to start...
 :waitForServer
 timeout /t 10 >nul
 curl -s http://127.0.0.1:8000/ >nul 2>&1
-if errorlevel 1 goto waitForServer
+if %errorlevel% neq 0 goto waitForServer
 
 echo Django server started successfully.
 
-REM Open the browser and get the process ID
+REM Open the browser
 echo Opening the browser...
 start chrome.exe http://127.0.0.1:8000/
 timeout /t 5 >nul
 
-REM Get the process ID of the browser
-for /f "tokens=2 delims=," %%a in ('tasklist /fi "IMAGENAME eq chrome.exe" /fo csv /nh') do set browser_pid=%%a
-echo Browser PID is %browser_pid%
+REM Get the process ID of the Python server
+for /f "tokens=2 delims=," %%a in ('tasklist /fi "IMAGENAME eq python.exe" /fo csv /nh') do set server_pid=%%a
+echo Django Server PID is %server_pid%
 
-REM Monitor the browser process and wait until it exits
-:waitForBrowser
+REM Monitor the Django server process and wait until it exits
+:waitForServerExit
 timeout /t 1 >nul
-tasklist /fi "PID eq %browser_pid%" | find /i "chrome.exe" >nul
-if not errorlevel 1 goto waitForBrowser
-
-REM Stop the Django server
-echo Stopping Django server...
-taskkill /f /im python.exe
+tasklist /fi "PID eq %server_pid%" | find /i "python.exe" >nul
+if %errorlevel% neq 1 goto waitForServerExit
 
 REM Log completion
 echo Script completed at %date% %time% >> script_log.txt
 echo Script completed successfully.
+exit /b 0
