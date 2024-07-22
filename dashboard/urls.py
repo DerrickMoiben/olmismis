@@ -3,7 +3,6 @@ from . import views
 
 
 urlpatterns = [
-    # path('admin/', views.admin, name='admin'),
     path('cashier-login/', views.cashier_login,  name='cashier-login'),
     path('cashier-signup/', views.cashier_signup, name='cashier-signup'),
     path('cashier-dashboard/', views.cashier_dashboard, name='cashier-dashboard'),
@@ -11,4 +10,6 @@ urlpatterns = [
     path('cashier-farmers/', views.cashier_farmers, name='cashier-farmers'),
     #path('enter-weight/<int:farmer_id>/', views.enter_weight, name='enter-weight'),
     path('announcements/', views.announcements, name='announcements'),
+    path('print-farmers-report/', views.print_farmers_report, name='print-farmers-report'),
+    
 ]

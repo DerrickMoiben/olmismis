@@ -1,10 +1,11 @@
+import json
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
-from dashboard.models import Farmer, Field, CoffeeBerries
+from dashboard.models import Farmer, CherryWeight, MbuniWeight
 from dashboard.forms import FarmerForm
-from .forms import SignupForm, LoginboardForm
-from django.views.decorators.csrf import csrf_protect
+from .forms import FarmerEditForm, SignupForm, LoginboardForm
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.contrib import messages
 from django.db.models import Sum, F
 from django.contrib.auth.decorators import login_required
@@ -12,6 +13,7 @@ from apis.sms import send_sms
 from escpos.printer import Usb
 from datetime import datetime, timedelta
 import win32print
+from django.http import JsonResponse
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +34,7 @@ def singup(request):
         form = SignupForm()
     return render(request, 'signup.html', {'form': form})
 
-@csrf_protect
+@login_required
 @csrf_protect
 def admin_login(request):
     if request.method == 'POST':
@@ -59,6 +61,7 @@ def admin_login(request):
         form = LoginboardForm()
     return render(request, 'login.html', {'form': form})
 
+
 @login_required
 @csrf_protect
 def admin_dashboard(request):
@@ -71,42 +74,57 @@ def admin_dashboard(request):
     # Total number of farmers
     total_farmers = Farmer.objects.count()
 
-    # Total coffee weight
-    total_coffee_weight = Farmer.objects.aggregate(
-        total_weight=Sum(F('field__coffeeberries__weight'))
+    # Total cherry weight
+    total_cherry_weight = CherryWeight.objects.aggregate(
+        total_weight=Sum('weight')
+    )['total_weight'] or 0
+
+    # Total mbuni weight
+    total_mbuni_weight = MbuniWeight.objects.aggregate(
+        total_weight=Sum('weight')
     )['total_weight'] or 0
 
     context = {
         'total_farmers': total_farmers,
-        'total_coffee_weight': total_coffee_weight,
+        'total_cherry_weight': total_cherry_weight,
+        'total_mbuni_weight': total_mbuni_weight,
         'farmers': farmers,
         'search_query': search_query,
     }
     return render(request, 'indexboard.html', context)
 
-
+@login_required
 @csrf_protect
 def all_farmers(request):
-    search_query = request.GET.get('search', '')
-    if search_query:
-        farmers = Farmer.objects.filter(name__icontains=search_query)
+    search_farmer = request.GET.get('search', '')
+    if search_farmer:
+        farmers = Farmer.objects.filter(name__icontains=search_farmer)
     else:
         farmers = Farmer.objects.all()
 
-    total_coffee_weight = 0
+    total_cherry_weight = 0
+    total_mbuni_weight = 0
+
     for farmer in farmers:
         farmer_fields = farmer.field_set.all()
-        farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
-        farmer.coffee_weight = farmer_coffee_weight
-        total_coffee_weight += farmer_coffee_weight
+        farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        farmer.total_cherry_weight = farmer_cherry_weight
+        farmer.total_mbuni_weight = farmer_mbuni_weight
+        total_cherry_weight += farmer_cherry_weight
+        total_mbuni_weight += farmer_mbuni_weight
 
     context = {
         'farmers': farmers,
-        'total_coffee_weight': total_coffee_weight,
-        'search_query': search_query,
+        'total_cherry_weight': total_cherry_weight,
+        'total_mbuni_weight': total_mbuni_weight,
+        'search_query': search_farmer,
     }
     return render(request, 'all_farmers.html', context)
 
+
+
+@login_required
 @csrf_protect
 def delete_farmer(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
@@ -114,23 +132,30 @@ def delete_farmer(request, farmer_id):
     messages.success(request, 'Farmer deleted successfully.')
     return redirect('all-farmers')
 
+
 @csrf_protect
 def print_farmer_report(request):
     try:
         farmers = Farmer.objects.all()
-        total_coffee_weight = 0
+        total_cherry_weight = 0
+        total_mbuni_weight = 0
 
-        # Calculate coffee weights for each farmer
+
         for farmer in farmers:
             farmer_fields = farmer.field_set.all()
-            farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
-            farmer.coffee_weight = farmer_coffee_weight
-            total_coffee_weight += farmer_coffee_weight
+            farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+            farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+            farmer.total_cherry_weight = farmer_cherry_weight
+            farmer.total_mbuni_weight = farmer_mbuni_weight
+            total_cherry_weight += farmer_cherry_weight
+            total_mbuni_weight += farmer_mbuni_weight
+
 
         # Prepare context for rendering
         context = {
             'farmers': farmers,
-            'total_coffee_weight': total_coffee_weight,
+            'total_cherry_weight': total_cherry_weight,
+            'total_mbuni_weight': total_mbuni_weight,
         }
 
         # Set the printer name
@@ -145,9 +170,12 @@ def print_farmer_report(request):
         for farmer in farmers:
             content += f"Farmer Name: {farmer.name}\n"
             content += f"Farmer Number: {farmer.number}\n"
-            content += f"Total Coffee Weight: {farmer.coffee_weight} kgs\n"
+            # content += f"Total Coffee Weight: {farmer.coffee_weight} kgs\n"
+            content += f"Total Cherry Weight: { farmer.total_cherry_weight} kgs\n"
+            content += f"Total Mbuni Weight: { farmer.total_mbuni_weight} kgs\n"
             content += "========================================\n"
-        content += f"Total Coffee Weight: {total_coffee_weight} kgs\n"
+        content += f"Total Cherry Weight: {total_cherry_weight} kgs\n"
+        content += f"Total Mbuni Weight: {total_mbuni_weight} kgs\n"
         content += "========================================\n\n\n"
 
         try:
@@ -174,22 +202,23 @@ def print_farmer_report(request):
 
     return render(request, 'all_farmers.html', context)
 
+
+
 @login_required
 @csrf_protect
 def edit_farmer(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
 
     if request.method == 'POST':
-        form = FarmerForm(request.POST, instance=farmer)
+        form = FarmerEditForm(request.POST, instance=farmer)
         if form.is_valid():
             form.save()
             messages.success(request, 'Farmer details updated successfully.')
-            return redirect('admin_dashboard')
     else:
-        form = FarmerForm(instance=farmer)
+        form = FarmerEditForm(instance=farmer)
 
     context = {
         'form': form,
         'farmer': farmer,
     }
-    return render(request, 'edit_farmer.html', context)
+    return render(request, 'edit_farmers.html', context)

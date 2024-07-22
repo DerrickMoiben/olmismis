@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
+    <title>Cashier Dashboard</title>
     <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 </head>
 <body style="padding: 0; margin: 0;">
@@ -11,7 +11,7 @@
         <ul>
             <li><a href="{% url 'cashier-farmers' %}">All Farmers</a></li>
             <li><a href="{% url 'register-new-farmer' %}">Register New Farmer</a></li>
-            <li><a href="{% url 'print-farmer-report' %}">Print Report</a></li>
+            <li><a href="{% url 'print-farmers-report' %}">Print Report</a></li>
             <li><a href="{% url 'announcements' %}">Announcement</a></li>
             <li><a href="{% url 'land_page' %}">Home</a></li>
         </ul>

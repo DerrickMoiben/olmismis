@@ -21,11 +21,17 @@ class Field(models.Model):
     def __str__(self):
         return self.field_name
     
-class CoffeeBerries(models.Model):
-    BERRY_TYPES = [
-        ('cherry', 'Cherry'),
-        ('mbuni', 'Mbuni'),
-    ]
+
+class CherryWeight(models.Model):
     field = models.ForeignKey(Field, on_delete=models.CASCADE)
     weight = models.FloatField()
-    berry_type = models.CharField(max_length=10, choices=BERRY_TYPES, default=True)
+
+    def __str__(self):
+        return f"{self.field} - Cherry: {self.weight}kg"
+
+class MbuniWeight(models.Model):
+    field = models.ForeignKey(Field, on_delete=models.CASCADE)
+    weight = models.FloatField()
+
+    def __str__(self):
+        return f"{self.field} - Mbuni: {self.weight}kg"

@@ -36,6 +36,7 @@ def send_sms(message, phone_numbers):
 
     # Read unsent messages
     data = read_unsent_messages(file_path)
+    print(data)
 
     # Append the new message to the list of unsent messages
     data.append(f_message)
