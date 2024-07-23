@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>All Farmers</title>
+    <title>Farmers</title>
     <style>
         form {
             margin-left: 100px;
             align-items: end;
-
         }
         input[type=text] {
             width: 20%;
@@ -33,7 +32,6 @@
         h2 {
             margin-top: 20px;
         }
-
         
         table {
             width: 100%;
@@ -120,10 +118,10 @@
     </style>
 </head>
 <body>
-    <h2>Farmers List and milk weight</h2>
+    <h2>Farmers List and Coffee Weights</h2>
     <a href="{% url 'cashier-dashboard' %}" class="btn-primary">Back</a>
     <form action="{% url 'cashier-farmers' %}" method="get">
-        <input type="text" name="search" placeholder="search farmer" value="{{ search_farmer }}">
+        <input type="text" name="search" placeholder="search farmer" value="{{ search_query }}">
         <button type="submit">Search</button>
     </form>
     {% if farmers %}
@@ -132,29 +130,32 @@
                 <tr>
                     <th>Number</th>
                     <th>Name</th>
-                    <th>Coffee Weight (kg)</th>
+                    <th>Cherry Coffee Weight (kg)</th>
+                    <th>Mbuni Coffee Weight (kg)</th>
                 </tr>
             </thead>
             <tbody>
                 {% for farmer in farmers %}
                 <tr>
-                    <td>{{farmer.number }}</td>
+                    <td>{{ farmer.number }}</td>
                     <td>{{ farmer.name }}</td>
-                    <td>{{ farmer.coffee_weight }}</td>
+                    <td>{{ farmer.total_cherry_weight|default_if_none:0|floatformat:2 }}</td>
+                    <td>{{ farmer.total_mbuni_weight|default_if_none:0|floatformat:2 }}</td>
                 </tr>
                 {% endfor %}
-                {% if messages %}
-                    <ul>
-                        {% for message in messages %}
-                            <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
             </tbody>
         </table>
-        <p>Total coffee weight: {{ total_coffee_weight }} kg</p>
+        <p>Total Cherry Weight: {{ total_cherry_weight|default_if_none:0|floatformat:2 }} kg</p>
+        <p>Total Mbuni Weight: {{ total_mbuni_weight|default_if_none:0|floatformat:2 }} kg</p>
     {% else %}
         <p>No farmers found.</p>
+    {% endif %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 </body>
 </html>

@@ -116,11 +116,17 @@
             background-color: #0069d9;
         }
     </style>
+    <script type="text/javascript">
+        function confirmDelete(farmerName) {
+            return confirm(`Are you sure you want to delete ${farmerName}?`);
+        }
+    </script>
+    
 </head>
 <body>
-    <form action="{% url 'all-farmers' %}" method="get">
-        <input type="text" name="search" placeholder="search farmer" value="{{ search_query }}">
-        <button type="submit">Search</button>
+    <form id="search" action="" method="post">
+        <input type="text" name="search" placeholder="search farmer" id="item">
+        <button type="button" onclick="submitFucntion()">Search</button>
     </form>
     <h2>All Farmers</h2>
     <a href="{% url 'admin_dashboard' %}" class="btn-primary">Back</a>
@@ -133,7 +139,8 @@
                     <th>Phone</th>
                     <th>Location</th>
                     <th>ID</th>
-                    <th>Coffee Weight (kg)</th>
+                    <th>Cherry Coffee Weight (kg)</th>
+                    <th>Mbuni Coffee Weight (kg)</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -145,9 +152,10 @@
                     <td>{{ farmer.phone }}</td>
                     <td>{{ farmer.location }}</td>
                     <td>{{ farmer.id_number}}</td>
-                    <td>{{ farmer.coffee_weight }}</td>
+                    <td>{{ farmer.total_cherry_weight|default_if_none:0|floatformat:2 }}</td>
+                    <td>{{ farmer.total_mbuni_weight|default_if_none:0|floatformat:2 }}</td>
                     <td>
-                        <form action="{% url 'delete-farmer' farmer.id %}" method="post" style="display:inline;">
+                        <form action="{% url 'delete-farmer' farmer.id %}" method="post" style="display:inline;" onsubmit="return confirmDelete('{{ farmer.name }}');">
                             {% csrf_token %}
                             <button type="submit" class="delete-button">Delete</button>
                         </form>
@@ -163,7 +171,8 @@
                 {% endif %}
             </tbody>
         </table>
-        <p>Total coffee weight: {{ total_coffee_weight }} kg</p>
+        <p>Total Cherry Weight: {{ total_cherry_weight|default_if_none:0|floatformat:2 }} kg</p>
+        <p>Total Mbuni Weight: {{ total_mbuni_weight|default_if_none:0|floatformat:2 }} kg</p>
         <a href="{%url 'print-farmer-report' %}" class="btn">Print Report</a>
     {% else %}
         <p>No farmers found.</p>

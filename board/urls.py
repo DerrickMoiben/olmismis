@@ -9,4 +9,5 @@ urlpatterns = [
     path('delete/<int:farmer_id>/', views.delete_farmer, name='delete-farmer'),
     path('print-farmer-report/', views.print_farmer_report, name='print-farmer-report'),
     path('edit_farmer/<int:farmer_id>/', views.edit_farmer, name='edit_farmer'),
+    path('add_farmer_with_number/', views.add_farmer_with_number, name='add_farmer_with_number'),
 ]

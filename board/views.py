@@ -1,16 +1,18 @@
+import json
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
-from dashboard.models import Farmer, Field, CoffeeBerries
+from dashboard.models import Farmer, CherryWeight, MbuniWeight
 from dashboard.forms import FarmerForm
-from .forms import SignupForm, LoginboardForm
-from django.views.decorators.csrf import csrf_protect
+from .forms import FarmerAddForm, FarmerEditForm, SignupForm, LoginboardForm
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.contrib import messages
 from django.db.models import Sum, F
 from django.contrib.auth.decorators import login_required
 from apis.sms import send_sms
 from escpos.printer import Usb
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ def singup(request):
         form = SignupForm()
     return render(request, 'signup.html', {'form': form})
 
-@csrf_protect
+@login_required
 @csrf_protect
 def admin_login(request):
     if request.method == 'POST':
@@ -58,6 +60,7 @@ def admin_login(request):
         form = LoginboardForm()
     return render(request, 'login.html', {'form': form})
 
+
 @login_required
 @csrf_protect
 def admin_dashboard(request):
@@ -70,110 +73,179 @@ def admin_dashboard(request):
     # Total number of farmers
     total_farmers = Farmer.objects.count()
 
-    # Total coffee weight
-    total_coffee_weight = Farmer.objects.aggregate(
-        total_weight=Sum(F('field__coffeeberries__weight'))
+    # Total cherry weight
+    total_cherry_weight = CherryWeight.objects.aggregate(
+        total_weight=Sum('weight')
+    )['total_weight'] or 0
+
+    # Total mbuni weight
+    total_mbuni_weight = MbuniWeight.objects.aggregate(
+        total_weight=Sum('weight')
     )['total_weight'] or 0
 
     context = {
         'total_farmers': total_farmers,
-        'total_coffee_weight': total_coffee_weight,
+        'total_cherry_weight': total_cherry_weight,
+        'total_mbuni_weight': total_mbuni_weight,
         'farmers': farmers,
         'search_query': search_query,
     }
     return render(request, 'indexboard.html', context)
 
+# @login_required
+# @csrf_protect
+# def all_farmers(request):
+#     search_farmer = request.GET.get('search', '')
+#     if search_farmer:
+#         farmers = Farmer.objects.filter(name__icontains=search_farmer)
+#     else:
+#         farmers = Farmer.objects.all()
 
+#     total_cherry_weight = 0
+#     total_mbuni_weight = 0
+
+#     for farmer in farmers:
+#         farmer_fields = farmer.field_set.all()
+#         farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+#         farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+#         farmer.total_cherry_weight = farmer_cherry_weight
+#         farmer.total_mbuni_weight = farmer_mbuni_weight
+#         total_cherry_weight += farmer_cherry_weight
+#         total_mbuni_weight += farmer_mbuni_weight
+
+#     context = {
+#         'farmers': farmers,
+#         'total_cherry_weight': total_cherry_weight,
+#         'total_mbuni_weight': total_mbuni_weight,
+#         'search_query': search_farmer,
+#     }
+#     return render(request, 'all_farmers.html', context)
+
+
+@login_required
 @csrf_protect
 def all_farmers(request):
-    search_query = request.GET.get('search', '')
-    if search_query:
-        farmers = Farmer.objects.filter(name__icontains=search_query)
+    search_farmer = request.GET.get('search', '')
+    if search_farmer:
+        farmers = Farmer.objects.filter(name__icontains=search_farmer)
     else:
-        farmers = Farmer.objects.all()
+        farmers = Farmer.objects.all().order_by('number')  # Sort by number
 
-    total_coffee_weight = 0
+    total_cherry_weight = 0
+    total_mbuni_weight = 0
+
     for farmer in farmers:
         farmer_fields = farmer.field_set.all()
-        farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
-        farmer.coffee_weight = farmer_coffee_weight
-        total_coffee_weight += farmer_coffee_weight
+        farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        farmer.total_cherry_weight = farmer_cherry_weight
+        farmer.total_mbuni_weight = farmer_mbuni_weight
+        total_cherry_weight += farmer_cherry_weight
+        total_mbuni_weight += farmer_mbuni_weight
 
     context = {
         'farmers': farmers,
-        'total_coffee_weight': total_coffee_weight,
-        'search_query': search_query,
+        'total_cherry_weight': total_cherry_weight,
+        'total_mbuni_weight': total_mbuni_weight,
+        'search_query': search_farmer,
     }
     return render(request, 'all_farmers.html', context)
 
+
+
+
+@login_required
 @csrf_protect
 def delete_farmer(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
     farmer.delete()
     messages.success(request, 'Farmer deleted successfully.')
-    return redirect('all_farmers')
+    return redirect('all-farmers')
 
+
+
+@login_required
 @csrf_protect
 def print_farmer_report(request):
     try:
         farmers = Farmer.objects.all()
-        total_coffee_weight = 0
+        total_cherry_weight = 0
+        total_mbuni_weight = 0
 
-        # Calculate coffee weights for each farmer
         for farmer in farmers:
             farmer_fields = farmer.field_set.all()
-            farmer_coffee_weight = sum(coffee.weight for coffee in CoffeeBerries.objects.filter(field__in=farmer_fields))
-            farmer.coffee_weight = farmer_coffee_weight
-            total_coffee_weight += farmer_coffee_weight
+            farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+            farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+            farmer.total_cherry_weight = farmer_cherry_weight
+            farmer.total_mbuni_weight = farmer_mbuni_weight
+            total_cherry_weight += farmer_cherry_weight
+            total_mbuni_weight += farmer_mbuni_weight
 
         # Prepare context for rendering
         context = {
             'farmers': farmers,
-            'total_coffee_weight': total_coffee_weight,
+            'total_cherry_weight': total_cherry_weight,
+            'total_mbuni_weight': total_mbuni_weight,
         }
 
-        # Initialize the printer
-        printer = Usb(0x0fe6, 0x811e, in_ep=0x82, out_ep=0x01)
+        # Set up the ESC/POS printer (adjust parameters according to your printer's setup)
+        printer = Usb(0x04b8, 0x0202)  # Replace with your printer's vendor and product ID
+
+        # Construct the content to be printed
+        content = (
+            "========================================\n"
+            "OLMISMIS FCS Ltd\n"
+            "========================================\n"
+            "Farmers Report\n"
+            "========================================\n"
+        )
+        for farmer in farmers:
+            content += (
+                f"Farmer Name: {farmer.name}\n"
+                f"Farmer Number: {farmer.number}\n"
+                f"Total Cherry Weight: {farmer.total_cherry_weight} kgs\n"
+                f"Total Mbuni Weight: {farmer.total_mbuni_weight} kgs\n"
+                "========================================\n"
+            )
+        content += (
+            f"Total Cherry Weight: {total_cherry_weight} kgs\n"
+            f"Total Mbuni Weight: {total_mbuni_weight} kgs\n"
+            "========================================\n\n\n"
+        )
 
         try:
-            # Set text style and alignment
-            printer.set(align='center', font='b', width=4, height=6)
-
-            # Print header
-            printer.text("========================================\n")
-            printer.text("OLMISMIS FCS Ltd\n")
-            printer.text("========================================\n")
-            printer.text("Farmers Report\n")
-            printer.text("========================================\n")
-
-            # Print each farmer's details
-            for farmer in farmers:
-                printer.text(f"Farmer Name: {farmer.name}\n")
-                printer.text(f"Farmer Number: {farmer.number}\n")
-                printer.text(f"Total Coffee Weight: {farmer.coffee_weight} kgs\n")
-                printer.text("========================================\n")
-
-            # Print total coffee weight
-            printer.text(f"Total Coffee Weight: {total_coffee_weight} kgs\n")
-            printer.text("========================================\n\n\n")
+            # Print content
+            printer.text(content)
             printer.cut()
-
             messages.success(request, 'Report printed successfully.')
 
         except Exception as e:
             messages.error(request, f'Error printing report: {e}')
 
-        finally:
-            # Close the printer
-            try:
-                printer.close()
-            except Exception as e:
-                messages.error(request, f'Error closing printer: {e}')
-
     except Exception as e:
         messages.error(request, f'Error fetching data: {e}')
 
     return render(request, 'all_farmers.html', context)
+
+
+# @login_required
+# @csrf_protect
+# def edit_farmer(request, farmer_id):
+#     farmer = get_object_or_404(Farmer, id=farmer_id)
+
+#     if request.method == 'POST':
+#         form = FarmerEditForm(request.POST, instance=farmer)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Farmer details updated successfully.')
+#     else:
+#         form = FarmerEditForm(instance=farmer)
+
+#     context = {
+#         'form': form,
+#         'farmer': farmer,
+#     }
+#     return render(request, 'edit_farmers.html', context)
 
 @login_required
 @csrf_protect
@@ -181,16 +253,76 @@ def edit_farmer(request, farmer_id):
     farmer = get_object_or_404(Farmer, id=farmer_id)
 
     if request.method == 'POST':
-        form = FarmerForm(request.POST, instance=farmer)
+        form = FarmerEditForm(request.POST, instance=farmer)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Farmer details updated successfully.')
-            return redirect('admin_dashboard')
+            edited_farmer = form.save(commit=False)
+            
+            # Check if the number is being changed
+            new_number = edited_farmer.number
+            if new_number != farmer.number:
+                # Ensure no other farmer has the same number
+                if Farmer.objects.filter(number=new_number).exists():
+                    messages.error(request, f'Farmer number {new_number} already exists.')
+                else:
+                    # Save the farmer with the new number
+                    edited_farmer.save()
+                    
+                    # Update the sequence of all farmers' numbers
+                    farmers = Farmer.objects.all().order_by('id')
+                    for index, farmer in enumerate(farmers, start=1):
+                        farmer.number = f'{index:03}'
+                        farmer.save()
+
+                    messages.success(request, 'Farmer details updated successfully.')
+                    return redirect('all-farmers')
+            else:
+                # Save the farmer without changing the number
+                edited_farmer.save()
+                messages.success(request, 'Farmer details updated successfully.')
+                return redirect('all-farmers')
+        else:
+            messages.error(request, 'Failed to update farmer details. Please correct the errors below.')
     else:
-        form = FarmerForm(instance=farmer)
+        form = FarmerEditForm(instance=farmer)
 
     context = {
         'form': form,
         'farmer': farmer,
     }
-    return render(request, 'edit_farmer.html', context)
+    return render(request, 'edit_farmers.html', context)
+
+
+
+@login_required
+@csrf_protect
+def add_farmer_with_number(request):
+    if request.method == 'POST':
+        form = FarmerAddForm(request.POST)
+        if form.is_valid():
+            new_farmer = form.save(commit=False)
+            
+            # Ensure the specified number is unique
+            if Farmer.objects.filter(number=new_farmer.number).exists():
+                messages.error(request, f'Farmer number {new_farmer.number} already exists.')
+            else:
+                new_farmer.save()
+                
+                # Update the sequence of all farmers' numbers
+                farmers = list(Farmer.objects.all().order_by('id'))
+                farmers.sort(key=lambda x: int(x.number))  # Sort farmers by number
+                
+                for index, farmer in enumerate(farmers):
+                    farmer.number = f'{index + 1:03}'  # Ensure the number is 3 digits
+                    farmer.save()
+
+                messages.success(request, 'Farmer added successfully.')
+                return redirect('all-farmers')
+        else:
+            messages.error(request, 'Failed to add farmer. Please correct the errors below.')
+    else:
+        form = FarmerAddForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'addfarmer.html', context)
