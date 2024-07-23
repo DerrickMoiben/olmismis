@@ -116,6 +116,12 @@
             background-color: #0069d9;
         }
     </style>
+    <script type="text/javascript">
+        function confirmDelete(farmerName) {
+            return confirm(`Are you sure you want to delete ${farmerName}?`);
+        }
+    </script>
+    
 </head>
 <body>
     <form id="search" action="" method="post">
@@ -149,7 +155,7 @@
                     <td>{{ farmer.total_cherry_weight|default_if_none:0|floatformat:2 }}</td>
                     <td>{{ farmer.total_mbuni_weight|default_if_none:0|floatformat:2 }}</td>
                     <td>
-                        <form action="{% url 'delete-farmer' farmer.id %}" method="post" style="display:inline;">
+                        <form action="{% url 'delete-farmer' farmer.id %}" method="post" style="display:inline;" onsubmit="return confirmDelete('{{ farmer.name }}');">
                             {% csrf_token %}
                             <button type="submit" class="delete-button">Delete</button>
                         </form>

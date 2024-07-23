@@ -17,4 +17,9 @@ class LoginboardForm(forms.Form):
 class FarmerEditForm(forms.ModelForm):
     class Meta:
         model = Farmer
-        fields = ['name', 'phone', 'location', 'id_number']
+        fields = ['name', 'phone', 'location', 'id_number', 'number']
+
+class FarmerAddForm(forms.ModelForm):
+    class Meta:
+        model = Farmer
+        fields = ['name', 'phone', 'location', 'id_number', 'number']

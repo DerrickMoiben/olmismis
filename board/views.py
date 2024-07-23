@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from dashboard.models import Farmer, CherryWeight, MbuniWeight
 from dashboard.forms import FarmerForm
-from .forms import FarmerEditForm, SignupForm, LoginboardForm
+from .forms import FarmerAddForm, FarmerEditForm, SignupForm, LoginboardForm
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.contrib import messages
 from django.db.models import Sum, F
@@ -93,6 +93,36 @@ def admin_dashboard(request):
     }
     return render(request, 'indexboard.html', context)
 
+# @login_required
+# @csrf_protect
+# def all_farmers(request):
+#     search_farmer = request.GET.get('search', '')
+#     if search_farmer:
+#         farmers = Farmer.objects.filter(name__icontains=search_farmer)
+#     else:
+#         farmers = Farmer.objects.all()
+
+#     total_cherry_weight = 0
+#     total_mbuni_weight = 0
+
+#     for farmer in farmers:
+#         farmer_fields = farmer.field_set.all()
+#         farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+#         farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+#         farmer.total_cherry_weight = farmer_cherry_weight
+#         farmer.total_mbuni_weight = farmer_mbuni_weight
+#         total_cherry_weight += farmer_cherry_weight
+#         total_mbuni_weight += farmer_mbuni_weight
+
+#     context = {
+#         'farmers': farmers,
+#         'total_cherry_weight': total_cherry_weight,
+#         'total_mbuni_weight': total_mbuni_weight,
+#         'search_query': search_farmer,
+#     }
+#     return render(request, 'all_farmers.html', context)
+
+
 @login_required
 @csrf_protect
 def all_farmers(request):
@@ -100,7 +130,7 @@ def all_farmers(request):
     if search_farmer:
         farmers = Farmer.objects.filter(name__icontains=search_farmer)
     else:
-        farmers = Farmer.objects.all()
+        farmers = Farmer.objects.all().order_by('number')  # Sort by number
 
     total_cherry_weight = 0
     total_mbuni_weight = 0
@@ -121,6 +151,7 @@ def all_farmers(request):
         'search_query': search_farmer,
     }
     return render(request, 'all_farmers.html', context)
+
 
 
 
@@ -204,6 +235,25 @@ def print_farmer_report(request):
 
 
 
+# @login_required
+# @csrf_protect
+# def edit_farmer(request, farmer_id):
+#     farmer = get_object_or_404(Farmer, id=farmer_id)
+
+#     if request.method == 'POST':
+#         form = FarmerEditForm(request.POST, instance=farmer)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, 'Farmer details updated successfully.')
+#     else:
+#         form = FarmerEditForm(instance=farmer)
+
+#     context = {
+#         'form': form,
+#         'farmer': farmer,
+#     }
+#     return render(request, 'edit_farmers.html', context)
+
 @login_required
 @csrf_protect
 def edit_farmer(request, farmer_id):
@@ -212,8 +262,33 @@ def edit_farmer(request, farmer_id):
     if request.method == 'POST':
         form = FarmerEditForm(request.POST, instance=farmer)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Farmer details updated successfully.')
+            edited_farmer = form.save(commit=False)
+            
+            # Check if the number is being changed
+            new_number = edited_farmer.number
+            if new_number != farmer.number:
+                # Ensure no other farmer has the same number
+                if Farmer.objects.filter(number=new_number).exists():
+                    messages.error(request, f'Farmer number {new_number} already exists.')
+                else:
+                    # Save the farmer with the new number
+                    edited_farmer.save()
+                    
+                    # Update the sequence of all farmers' numbers
+                    farmers = Farmer.objects.all().order_by('id')
+                    for index, farmer in enumerate(farmers, start=1):
+                        farmer.number = f'{index:03}'
+                        farmer.save()
+
+                    messages.success(request, 'Farmer details updated successfully.')
+                    return redirect('all-farmers')
+            else:
+                # Save the farmer without changing the number
+                edited_farmer.save()
+                messages.success(request, 'Farmer details updated successfully.')
+                return redirect('all-farmers')
+        else:
+            messages.error(request, 'Failed to update farmer details. Please correct the errors below.')
     else:
         form = FarmerEditForm(instance=farmer)
 
@@ -222,3 +297,39 @@ def edit_farmer(request, farmer_id):
         'farmer': farmer,
     }
     return render(request, 'edit_farmers.html', context)
+
+
+
+@login_required
+@csrf_protect
+def add_farmer_with_number(request):
+    if request.method == 'POST':
+        form = FarmerAddForm(request.POST)
+        if form.is_valid():
+            new_farmer = form.save(commit=False)
+            
+            # Ensure the specified number is unique
+            if Farmer.objects.filter(number=new_farmer.number).exists():
+                messages.error(request, f'Farmer number {new_farmer.number} already exists.')
+            else:
+                new_farmer.save()
+                
+                # Update the sequence of all farmers' numbers
+                farmers = list(Farmer.objects.all().order_by('id'))
+                farmers.sort(key=lambda x: int(x.number))  # Sort farmers by number
+                
+                for index, farmer in enumerate(farmers):
+                    farmer.number = f'{index + 1:03}'  # Ensure the number is 3 digits
+                    farmer.save()
+
+                messages.success(request, 'Farmer added successfully.')
+                return redirect('all-farmers')
+        else:
+            messages.error(request, 'Failed to add farmer. Please correct the errors below.')
+    else:
+        form = FarmerAddForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'addfarmer.html', context)
