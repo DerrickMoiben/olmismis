@@ -35,3 +35,21 @@ class MbuniWeight(models.Model):
 
     def __str__(self):
         return f"{self.field} - Mbuni: {self.weight}kg"
+    
+
+class Season(models.Model):
+    name = models.CharField(max_length=100)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+class Harvest(models.Model):
+    name = models.CharField(max_length=100, default='Harvest')
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    season = models.ForeignKey(Season, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"Harvest from {self.start_date} to {self.end_date or 'Ongoing'} in {self.season.name}"
+

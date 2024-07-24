@@ -1,8 +1,8 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
-from .forms import AnnouncementsForm, SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm
-from .models import Farmer, Field, CherryWeight, MbuniWeight
+from .forms import AnnouncementsForm, HarvestForm, SeasonForm, SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm
+from .models import Farmer, Field, CherryWeight, Harvest, MbuniWeight, Season
 import logging
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
@@ -377,3 +377,63 @@ def cashier_farmers(request):
         'search_query': search_farmer,
     }
     return render(request, 'admin/cashier_farmers.html', context)
+
+
+@csrf_protect
+def create_harvest(request):
+    if request.method == 'POST':
+        form = HarvestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Harvest created successfully.')
+            return redirect('all_harvests')
+    else:
+        form = HarvestForm()
+    return render(request, 'admin/create_harvest.html', {'form': form})
+
+@csrf_protect
+def update_harvest(request, harvest_id):
+    harvest = get_object_or_404(Harvest, id=harvest_id)
+    if request.method == 'POST':
+        form = HarvestForm(request.POST, instance=harvest)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Harvest updated successfully.')
+            return redirect('all-harvests')
+    else:
+        form = HarvestForm(instance=harvest)
+    return render(request, 'admin/update_harvest.html', {'form': form, 'harvest': harvest})
+
+@csrf_protect
+def all_harvests(request):
+    harvests = Harvest.objects.all().order_by('start_date')
+    context = {
+        'harvests': harvests,
+    }
+    return render(request, 'admin/all_harvests.html', context)
+
+
+@csrf_protect
+def create_season(request):
+    if request.method == 'POST':
+        form = SeasonForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Season created successfully.')
+            return redirect('all_harvests')
+    else:
+        form = SeasonForm()
+    return render(request, 'admin/create_season.html', {'form': form})
+
+@csrf_protect
+def update_season(request, season_id):
+    season = get_object_or_404(Season, id=season_id)
+    if request.method == 'POST':
+        form = SeasonForm(request.POST, instance=season)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Season updated successfully.')
+            return redirect('all_seasons')
+    else:
+        form = SeasonForm(instance=season)
+    return render(request, 'admin/update_season.html', {'form': form, 'season': season})

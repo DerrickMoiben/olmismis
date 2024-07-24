@@ -11,5 +11,9 @@ urlpatterns = [
     #path('enter-weight/<int:farmer_id>/', views.enter_weight, name='enter-weight'),
     path('announcements/', views.announcements, name='announcements'),
     path('print-farmers-report/', views.print_farmers_report, name='print-farmers-report'),
+    path('create_harvest/', views.create_harvest, name='create_harvest'),
+    path('update_harvest/', views.update_harvest, name='update_harvest'),
+    path('all_harvests/', views.all_harvests, name='all_harvests'),
+    path('create_season/', views.create_season, name='create_season'),
     
 ]

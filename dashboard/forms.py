@@ -48,3 +48,27 @@ class AnnouncementsForm(forms.Form):
         ),
         required=True
     )
+
+from django import forms
+from .models import Season
+
+class SeasonForm(forms.ModelForm):
+    class Meta:
+        model = Season
+        fields = ['name', 'start_date', 'end_date']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'required': False}),
+        }
+
+
+from .models import Harvest
+
+class HarvestForm(forms.ModelForm):
+    class Meta:
+        model = Harvest
+        fields = ['name', 'season', 'start_date', 'end_date']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'required': False}),
+        }
