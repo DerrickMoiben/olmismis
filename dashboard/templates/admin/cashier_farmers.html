@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Farmers</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Farmers</title>
     <style>
         form {
             margin-left: 100px;
@@ -14,7 +16,7 @@
             box-sizing: border-box;
         }
         button {
-            background-color: #4CAF50;
+            background-color: #26834a;
             border: none;
             color: white;
             padding: 15px 32px;
@@ -42,7 +44,7 @@
             padding: 8px;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #44a354;
             text-align: left;
         }
         tr:nth-child(even) {
@@ -118,44 +120,42 @@
     </style>
 </head>
 <body>
-    <h2>Farmers List and Coffee Weights</h2>
-    <a href="{% url 'cashier-dashboard' %}" class="btn-primary">Back</a>
-    <form action="{% url 'cashier-farmers' %}" method="get">
-        <input type="text" name="search" placeholder="search farmer" value="{{ search_query }}">
-        <button type="submit">Search</button>
-    </form>
-    {% if farmers %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Number</th>
-                    <th>Name</th>
-                    <th>Cherry Coffee Weight (kg)</th>
-                    <th>Mbuni Coffee Weight (kg)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for farmer in farmers %}
-                <tr>
-                    <td>{{ farmer.number }}</td>
-                    <td>{{ farmer.name }}</td>
-                    <td>{{ farmer.total_cherry_weight|default_if_none:0|floatformat:2 }}</td>
-                    <td>{{ farmer.total_mbuni_weight|default_if_none:0|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <p>Total Cherry Weight: {{ total_cherry_weight|default_if_none:0|floatformat:2 }} kg</p>
-        <p>Total Mbuni Weight: {{ total_mbuni_weight|default_if_none:0|floatformat:2 }} kg</p>
-    {% else %}
-        <p>No farmers found.</p>
-    {% endif %}
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+
+<h1>Farmers for Harvest:</h1>
+
+<!-- Search Query Form -->
+<form method="GET" action="">
+    <input type="text" name="search" placeholder="Search for farmers..." value="{{ request.GET.search }}">
+    <button type="submit">Search</button>
+</form>
+
+<!-- Back to Cashier Dashboard Button -->
+<a href="{% url 'cashier-dashboard' %}" class="btn btn-primary">Back </a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Farmer Number</th>
+            <th>Farmer Name</th>
+            <th>Total Cherry Weight</th>
+            <th>Total Mbuni Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in farmer_data %}
+        <tr>
+            <td>{{ data.farmer.number }}</td>
+            <td>{{ data.farmer.name }}</td>
+            <td>{{ data.cherry_weight_sum }} kg</td>
+            <td>{{ data.mbuni_weight_sum }} kg</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No farmers found for this harvest.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 </body>
 </html>

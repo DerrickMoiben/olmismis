@@ -17,6 +17,7 @@ class Farmer(models.Model):
 class Field(models.Model):
     farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
     field_name = models.CharField(max_length=100)
+    harvest = models.ForeignKey('Harvest', on_delete=models.CASCADE, null=True, blank=True)  # Add this line
 
     def __str__(self):
         return self.field_name
@@ -53,3 +54,12 @@ class Harvest(models.Model):
     def __str__(self):
         return f"Harvest from {self.start_date} to {self.end_date or 'Ongoing'} in {self.season.name}"
 
+from django.contrib.auth.models import User
+from .models import Harvest
+
+class UserSelectedHarvest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    harvest = models.ForeignKey(Harvest, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.harvest}"

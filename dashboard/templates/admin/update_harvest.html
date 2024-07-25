@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Season</title>
+    <title>Update Harvest</title>
 </head>
 <body>
-    <h1>Update Season: {{ season.name }}</h1>
+    <h1>Update Harvest: {{ harvest.name }}</h1>
 
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Update Season</button>
+        <button type="submit">Update Harvest</button>
     </form>
 
-    <a href="{% url 'manage_harvests' %}">Cancel</a>
+    <a href="{% url 'manage_harvests' %}">back</a>
 </body>
 </html>

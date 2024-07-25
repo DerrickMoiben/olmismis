@@ -7,12 +7,14 @@ import logging
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.db.models import Sum
-from datetime import datetime
+from datetime import date, datetime
 from escpos.printer import Usb
 import json
 from django.conf import settings
 from apis.sms import send_sms
 from django.utils.timezone import now
+from django.db.models import Q
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,7 @@ def cashier_login(request):
             logger.info(f"Username: {username}, Password: {password}, User: {user}")
             if user:
                 login(request, user)
-                return redirect('cashier-dashboard')
+                return redirect('select_harvest')
             else:
                 logger.error("Authentication failed")
     else:
@@ -137,13 +139,138 @@ def register_new_farmer(request):
         'form': form
     })
 
-
-
+""""now unaona hii inatuma sms as per the harvest wacha ni weke njo after kutest to delete hii"""
 # Replace the win32print code in cashier_dashboard view
+# @csrf_protect
+# def cashier_dashboard(request):
+#     # Retrieve the selected harvest from the session
+#     selected_harvest_id = request.session.get('selected_harvest_id')
+#     try:
+#         selected_harvest = Harvest.objects.get(pk=selected_harvest_id)
+#     except Harvest.DoesNotExist:
+#         selected_harvest = None
+
+#     if request.method == 'POST':
+#         form = CoffeeBerriesForm(request.POST)
+#         if form.is_valid():
+#             farmer_number = form.cleaned_data['farmer_number']
+#             berry_type = form.cleaned_data['berry_type']
+#             weight = form.cleaned_data['weight']
+            
+#             farmer = Farmer.objects.filter(number=farmer_number).first()
+#             if farmer:
+#                 phone_number = farmer.phone
+#                 try:
+#                     # Ensure there's a default field for the farmer
+#                     field, created = Field.objects.get_or_create(
+#                         farmer=farmer, 
+#                         field_name="Default Field Name",
+#                         harvest=selected_harvest  # Associate with the selected harvest
+#                     )
+                    
+#                     if berry_type == 'cherry':
+#                         cherry_weight, created = CherryWeight.objects.get_or_create(
+#                             field=field, 
+#                             defaults={'weight': weight}
+#                         )
+#                         if not created:
+#                             cherry_weight.weight += weight
+#                             cherry_weight.save()
+#                         berry_weight_sum = CherryWeight.objects.filter(
+#                             field__in=Field.objects.filter(farmer=farmer)
+#                         ).aggregate(Sum('weight'))['weight__sum'] or 0
+#                     elif berry_type == 'mbuni':
+#                         mbuni_weight, created = MbuniWeight.objects.get_or_create(
+#                             field=field, 
+#                             defaults={'weight': weight}
+#                         )
+#                         if not created:
+#                             mbuni_weight.weight += weight
+#                             mbuni_weight.save()
+#                         berry_weight_sum = MbuniWeight.objects.filter(
+#                             field__in=Field.objects.filter(farmer=farmer)
+#                         ).aggregate(Sum('weight'))['weight__sum'] or 0
+
+#                     # Calculate total weights
+#                     farmer_fields = Field.objects.filter(farmer=farmer)
+#                     cherry_weight_sum = CherryWeight.objects.filter(
+#                         field__in=farmer_fields
+#                     ).aggregate(Sum('weight'))['weight__sum'] or 0
+#                     mbuni_weight_sum = MbuniWeight.objects.filter(
+#                         field__in=farmer_fields
+#                     ).aggregate(Sum('weight'))['weight__sum'] or 0
+#                     total_coffee_weight = cherry_weight_sum + mbuni_weight_sum
+
+#                     farmer.total_coffee_weight = total_coffee_weight
+#                     farmer.save()
+
+#                     # Prepare SMS message
+#                     current_datetime = datetime.now()
+#                     formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
+#                     sms_message = (
+#                         f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of {berry_type} coffee. "
+#                     )
+#                     if berry_type == 'cherry':
+#                         sms_message += f"Your total cherry coffee weight is {berry_weight_sum} kgs."
+#                     elif berry_type == 'mbuni':
+#                         sms_message += f"Your total mbuni coffee weight is {berry_weight_sum} kgs."
+                    
+#                     try:
+#                         send_sms(sms_message, [phone_number])
+#                     except Exception as e:
+#                         logger.error(f"Error sending SMS: {e}")
+#                         messages.error(request, f'Error sending SMS: {e}')
+
+#                     # Print receipt
+#                     content = (
+#                         "========================================\n"
+#                         "OLMISMIS FCS Ltd\n"
+#                         "========================================\n"
+#                         f"Date: {current_datetime.date()}\n"
+#                         f"Time: {current_datetime.strftime('%H:%M')}\n"
+#                         "========================================\n"
+#                         f"Farmer Name: {farmer.name}\n"
+#                         f"Farmer number: {farmer.number}\n"
+#                         f"Weight of the Day: {weight} kgs\n"
+#                         f"Total {berry_type.capitalize()} Coffee Weight: {berry_weight_sum} kgs\n"
+#                         f"Served by: {request.user.username}\n"
+#                         "========================================\n\n\n"
+#                     )
+
+#                     # Use escpos to print the receipt
+#                     printer = Usb(0x04b8, 0x0e15)  # Replace with your printer's Vendor ID and Product ID
+#                     printer.text(content)
+#                     printer.cut()
+
+#                     messages.success(request, 'Coffee berries weight updated successfully.')
+#                     return redirect('cashier-dashboard')
+#                 except Exception as e:
+#                     logger.error(f"Error updating coffee berries: {e}")
+#                     messages.error(request, f'Error updating coffee berries: {e}')
+#             else:
+#                 messages.error(request, 'Farmer not found. Please enter a valid farmer number.')
+#     else:
+#         form = CoffeeBerriesForm()
+
+#     return render(request, 'admin/admin_dashboard.html', {
+#         'form': form,
+#         'selected_harvest': selected_harvest  # Pass the selected harvest to the template
+#     })
+
+# Replace the win32print code in print_farmers_report view
+
+
+
+
 @csrf_protect
 def cashier_dashboard(request):
-    farmers = Farmer.objects.all()
-    
+    # Retrieve the selected harvest from the session
+    selected_harvest_id = request.session.get('selected_harvest_id')
+    try:
+        selected_harvest = Harvest.objects.get(pk=selected_harvest_id)
+    except Harvest.DoesNotExist:
+        selected_harvest = None
+
     if request.method == 'POST':
         form = CoffeeBerriesForm(request.POST)
         if form.is_valid():
@@ -158,7 +285,8 @@ def cashier_dashboard(request):
                     # Ensure there's a default field for the farmer
                     field, created = Field.objects.get_or_create(
                         farmer=farmer, 
-                        field_name="Default Field Name"
+                        field_name="Default Field Name",
+                        harvest=selected_harvest  # Associate with the selected harvest
                     )
                     
                     if berry_type == 'cherry':
@@ -169,9 +297,12 @@ def cashier_dashboard(request):
                         if not created:
                             cherry_weight.weight += weight
                             cherry_weight.save()
-                        berry_weight_sum = CherryWeight.objects.filter(
+                        
+                        # Calculate total cherry weight for the entire season
+                        total_cherry_weight = CherryWeight.objects.filter(
                             field__in=Field.objects.filter(farmer=farmer)
                         ).aggregate(Sum('weight'))['weight__sum'] or 0
+
                     elif berry_type == 'mbuni':
                         mbuni_weight, created = MbuniWeight.objects.get_or_create(
                             field=field, 
@@ -180,10 +311,13 @@ def cashier_dashboard(request):
                         if not created:
                             mbuni_weight.weight += weight
                             mbuni_weight.save()
-                        berry_weight_sum = MbuniWeight.objects.filter(
+                        
+                        # Calculate total mbuni weight for the entire season
+                        total_mbuni_weight = MbuniWeight.objects.filter(
                             field__in=Field.objects.filter(farmer=farmer)
                         ).aggregate(Sum('weight'))['weight__sum'] or 0
 
+                    # Calculate total weights for the selected harvest
                     farmer_fields = Field.objects.filter(farmer=farmer)
                     cherry_weight_sum = CherryWeight.objects.filter(
                         field__in=farmer_fields
@@ -196,67 +330,44 @@ def cashier_dashboard(request):
                     farmer.total_coffee_weight = total_coffee_weight
                     farmer.save()
 
+                    # Prepare SMS message
+                    current_datetime = datetime.now()
+                    formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
+                    sms_message = (
+                        f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of {berry_type} coffee. "
+                    )
+                    if berry_type == 'cherry':
+                        sms_message += f"Your total cherry coffee weight for the season is {total_cherry_weight} kgs."
+                    elif berry_type == 'mbuni':
+                        sms_message += f"Your total mbuni coffee weight for the season is {total_mbuni_weight} kgs."
+                    
                     try:
-                        current_datetime = datetime.now()
-                        formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
-                        time = current_datetime.strftime('%H:%M')
-                        date = current_datetime.date()
-
-                        sms_message = (
-                            f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of {berry_type} coffee. "
-                        )
-                        if berry_type == 'cherry':
-                            sms_message += f"Your total cherry coffee weight is {berry_weight_sum} kgs."
-                        elif berry_type == 'mbuni':
-                            sms_message += f"Your total mbuni coffee weight is {berry_weight_sum} kgs."
-                        
-                        try:
-                            send_sms(sms_message, [phone_number])
-                        except Exception as e:
-                            logger.error(f"Error sending SMS: {e}")
-                            messages.error(request, f'Error sending SMS: {e}')
-
-                        if berry_type == 'cherry':
-                            content = (
-                                "========================================\n"
-                                "OLMISMIS FCS Ltd\n"
-                                "========================================\n"
-                                f"Date: {date}\n"
-                                f"Time: {time}\n"
-                                "========================================\n"
-                                f"Farmer Name: {farmer.name}\n"
-                                f"Farmer number: {farmer.number}\n"
-                                f"Weight of the Day: {weight} kgs\n"
-                                f"Total Cherry Coffee Weight: {berry_weight_sum} kgs\n"
-                                f"Type of Coffee: {berry_type}\n"
-                                f"Served by: {request.user.username}\n"
-                                "========================================\n\n\n"
-                            )
-                        elif berry_type == 'mbuni':
-                            content = (
-                                "========================================\n"
-                                "OLMISMIS FCS Ltd\n"
-                                "========================================\n"
-                                f"Date: {date}\n"
-                                f"Time: {time}\n"
-                                "========================================\n"
-                                f"Farmer Name: {farmer.name}\n"
-                                f"Farmer number: {farmer.number}\n"
-                                f"Weight of the Day: {weight} kgs\n"
-                                f"Total Mbuni Coffee Weight: {berry_weight_sum} kgs\n"
-                                f"Type of Coffee: {berry_type}\n"
-                                f"Served by: {request.user.username}\n"
-                                "========================================\n\n\n"
-                            )
-
-                        # Use escpos to print the receipt
-                        printer = Usb(0x04b8, 0x0e15)  # Replace with your printer's Vendor ID and Product ID
-                        printer.text(content)
-                        printer.cut()
-
+                        send_sms(sms_message, [phone_number])
                     except Exception as e:
-                        logger.error(f"Error printing receipt: {e}")
-                        messages.error(request, f'Error printing receipt: {e}')
+                        logger.error(f"Error sending SMS: {e}")
+                        messages.error(request, f'Error sending SMS: {e}')
+
+                    # Print receipt
+                    content = (
+                        "========================================\n"
+                        "OLMISMIS FCS Ltd\n"
+                        "========================================\n"
+                        f"Date: {current_datetime.date()}\n"
+                        f"Time: {current_datetime.strftime('%H:%M')}\n"
+                        "========================================\n"
+                        f"Farmer Name: {farmer.name}\n"
+                        f"Farmer number: {farmer.number}\n"
+                        f"Weight of the Day: {weight} kgs\n"
+                        f"Total Cherry Coffee Weight for the Season: {total_cherry_weight} kgs\n"
+                        f"Served by: {request.user.username}\n"
+                        "========================================\n\n\n"
+                    )
+
+                    # Use escpos to print the receipt
+                    printer = Usb(0x04b8, 0x0e15)  # Replace with your printer's Vendor ID and Product ID
+                    printer.text(content)
+                    printer.cut()
+
                     messages.success(request, 'Coffee berries weight updated successfully.')
                     return redirect('cashier-dashboard')
                 except Exception as e:
@@ -266,9 +377,14 @@ def cashier_dashboard(request):
                 messages.error(request, 'Farmer not found. Please enter a valid farmer number.')
     else:
         form = CoffeeBerriesForm()
-    return render(request, 'admin/admin_dashboard.html', {'farmers': farmers, 'form': form})
 
-# Replace the win32print code in print_farmers_report view
+    return render(request, 'admin/admin_dashboard.html', {
+        'form': form,
+        'selected_harvest': selected_harvest  # Pass the selected harvest to the template
+    })
+
+
+
 @csrf_protect        
 def print_farmers_report(request):
     try:
@@ -349,35 +465,53 @@ def announcements(request):
 
     return render(request, 'admin/announcements.html', {'form': form})
 
+from django.shortcuts import render
+from django.db.models import Sum
+from .models import Farmer, Field, CherryWeight, MbuniWeight, Harvest
+from django.views.decorators.csrf import csrf_protect
 
 @csrf_protect
 def cashier_farmers(request):
+    # Retrieve the selected harvest from the session
+    selected_harvest_id = request.session.get('selected_harvest_id')
+    try:
+        selected_harvest = Harvest.objects.get(pk=selected_harvest_id)
+    except Harvest.DoesNotExist:
+        selected_harvest = None
+
+    # Retrieve all farmers
+    farmers = Farmer.objects.all().order_by('id')  # Order by ID (or registration date if you have one)
+
+    # Search functionality
     search_farmer = request.GET.get('search', '')
     if search_farmer:
-        farmers = Farmer.objects.filter(name__icontains=search_farmer)
-    else:
-        farmers = Farmer.objects.all()
+        farmers = farmers.filter(name__icontains=search_farmer)  # Filter by name
 
-    total_cherry_weight = 0
-    total_mbuni_weight = 0
+    # Prepare a list to hold farmer data with weights
+    farmer_data = []
 
+    # Calculate weights for each farmer based on the selected harvest
     for farmer in farmers:
-        farmer_fields = farmer.field_set.all()
-        farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-        farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-        farmer.total_cherry_weight = farmer_cherry_weight
-        farmer.total_mbuni_weight = farmer_mbuni_weight
-        total_cherry_weight += farmer_cherry_weight
-        total_mbuni_weight += farmer_mbuni_weight
+        # Initialize weights to zero
+        cherry_weight_sum = 0
+        mbuni_weight_sum = 0
+        
+        if selected_harvest:
+            farmer_fields = Field.objects.filter(farmer=farmer, harvest=selected_harvest)
+            cherry_weight_sum = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+            mbuni_weight_sum = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        
+        # Append farmer data to the list
+        farmer_data.append({
+            'farmer': farmer,
+            'cherry_weight_sum': cherry_weight_sum,
+            'mbuni_weight_sum': mbuni_weight_sum,
+        })
 
-    context = {
-        'farmers': farmers,
-        'total_cherry_weight': total_cherry_weight,
-        'total_mbuni_weight': total_mbuni_weight,
-        'search_query': search_farmer,
-    }
-    return render(request, 'admin/cashier_farmers.html', context)
-
+    return render(request, 'admin/cashier_farmers.html', {
+        'farmer_data': farmer_data,
+        'selected_harvest': selected_harvest  # Pass the selected harvest to the template
+    })
 
 @csrf_protect
 def create_harvest(request):
@@ -386,7 +520,7 @@ def create_harvest(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Harvest created successfully.')
-            return redirect('all_harvests')
+            return redirect('manage_harvests')
     else:
         form = HarvestForm()
     return render(request, 'admin/create_harvest.html', {'form': form})
@@ -399,18 +533,11 @@ def update_harvest(request, harvest_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Harvest updated successfully.')
-            return redirect('all-harvests')
+            return redirect('manage_harvests')
     else:
         form = HarvestForm(instance=harvest)
     return render(request, 'admin/update_harvest.html', {'form': form, 'harvest': harvest})
 
-@csrf_protect
-def all_harvests(request):
-    harvests = Harvest.objects.all().order_by('start_date')
-    context = {
-        'harvests': harvests,
-    }
-    return render(request, 'admin/all_harvests.html', context)
 
 
 @csrf_protect
@@ -420,7 +547,7 @@ def create_season(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Season created successfully.')
-            return redirect('all_harvests')
+            return redirect('manage_harvests')
     else:
         form = SeasonForm()
     return render(request, 'admin/create_season.html', {'form': form})
@@ -433,7 +560,77 @@ def update_season(request, season_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Season updated successfully.')
-            return redirect('all_seasons')
+            return redirect('manage_harvests')
     else:
         form = SeasonForm(instance=season)
     return render(request, 'admin/update_season.html', {'form': form, 'season': season})
+
+
+# Optionally, uncomment this if using UserSelectedHarvest model
+# from .models import UserSelectedHarvest
+
+def select_harvest(request):
+    if request.method == 'POST':
+        selected_harvest_id = request.POST.get('harvest')
+        try:
+            selected_harvest = Harvest.objects.get(pk=selected_harvest_id)
+
+            # Option 1: Store selection in session (if not using UserSelectedHarvest model)
+            request.session['selected_harvest_id'] = selected_harvest_id
+
+            # Option 2: Save selection to UserSelectedHarvest model (if using the model)
+            # user_selected_harvest, created = UserSelectedHarvest.objects.get_or_create(
+            #     user=request.user, harvest=selected_harvest
+            # )
+
+            messages.success(request, f"Harvest '{selected_harvest.name}' selected successfully.")
+            return redirect('cashier-dashboard')  # Redirect to your harvest management view
+        except Harvest.DoesNotExist:
+            messages.error(request, 'Invalid harvest selection. Please try again.')
+    else:
+        today = date.today()  # Get current date
+
+        # Filter harvests based on active seasons
+        active_seasons = Season.objects.filter(
+            Q(start_date__lte=today) & (Q(end_date__gte=today) | Q(end_date__isnull=True))
+        )  # Include seasons with open-ended dates
+        harvests = Harvest.objects.filter(season__in=active_seasons)
+
+        # Option 1: Retrieve harvest from session (if using session storage)
+        selected_harvest_id = request.session.get('selected_harvest_id')
+
+        # Option 2: Retrieve harvest from UserSelectedHarvest model (if using the model)
+        # try:
+        #     user_selected_harvest = UserSelectedHarvest.objects.get(user=request.user)
+        #     selected_harvest = user_selected_harvest.harvest
+        # except UserSelectedHarvest.DoesNotExist:
+        #     selected_harvest = None
+
+        return render(request, 'admin/select_harvest.html', {'harvests': harvests, 'selected_harvest_id': selected_harvest_id})
+
+
+def manage_harvests(request):
+    seasons = Season.objects.all().order_by('-start_date')  # Order by start date (descending)
+    harvests = Harvest.objects.select_related('season')  # Optimize query with select_related
+    return render(request, 'admin/manage_harvests.html', {'seasons': seasons, 'harvests': harvests})
+
+
+def delete_season(request, pk):
+    try:
+        season = Season.objects.get(pk=pk)
+        season.delete()
+        messages.success(request, 'Season deleted successfully.')
+    except Season.DoesNotExist:
+        messages.error(request, 'Season not found.')
+    return redirect('manage_harvests')
+
+def delete_harvest(request, harvest_id):
+    if request.method == 'POST':
+        harvest_id = request.POST.get('harvest_id')
+        try:
+            harvest = Harvest.objects.get(pk=harvest_id)
+            harvest.delete()
+            messages.success(request, 'Harvest deleted successfully.')
+        except Harvest.DoesNotExist:
+            messages.error(request, 'Harvest not found.')
+    return redirect('manage_harvests')
