@@ -10,6 +10,7 @@ class Farmer(models.Model):
     phone = models.CharField(max_length=15)
     location = models.CharField(max_length=100)
     is_number = models.BooleanField(default=False)
+    agreement = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -63,3 +64,16 @@ class UserSelectedHarvest(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.harvest}"
+
+class Payment(models.Model):
+    farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE)
+    harvest = models.ForeignKey(Harvest, on_delete=models.CASCADE)
+    church = models.CharField(max_length=1, null=True)  # Allow null for no agreement
+    berry_type = models.CharField(max_length=10)  # 'cherry' or 'mbuni'
+    amount = models.DecimalField(max_digits=10, decimal_places=2)  # Total amount before deduction
+    amount_received = models.DecimalField(max_digits=10, decimal_places=2)  # Amount after deduction
+    price_per_kilo = models.DecimalField(max_digits=10, decimal_places=2)  # Price per kilo for the transaction
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.farmer.name} - {self.amount} (Harvest: {self.harvest.name}, Church: {self.church})"

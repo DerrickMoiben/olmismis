@@ -20,4 +20,6 @@ urlpatterns = [
     path('dashboard/delete_season/<int:pk>/', views.delete_season, name='delete_season'),
     path('update_season/<int:season_id>/', views.update_season, name='update_season'),
     # path('delete_harvest/<int:harvest_id>/', views.delete_harvest, name='delete_harvest')
+    path('select_harvest_for_payment/', views.select_harvest_for_payment, name='select_harvest_for_payment'),  # URL for selecting harvest
+    path('process-payments/<int:selected_harvest_id>/', views.process_payments, name='process_payments'),  # URL for processing payments
 ]

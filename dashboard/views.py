@@ -634,3 +634,179 @@ def delete_harvest(request, harvest_id):
         except Harvest.DoesNotExist:
             messages.error(request, 'Harvest not found.')
     return redirect('manage_harvests')
+
+from .models import Payment
+
+def process_payment(request):
+    if request.method == 'POST':
+        harvest_id = request.POST.get('harvest')
+        berry_type = request.POST.get('berry_type')
+        price_per_kilo = float(request.POST.get('price_per_kilo'))
+
+        # Get the harvest
+        harvest = Harvest.objects.get(id=harvest_id)
+
+        # Prepare a summary of payments
+        payment_summary = []
+
+        # Get all farmers
+        farmers = Farmer.objects.all()
+
+        for farmer in farmers:
+            # Check the farmer's agreement
+            agreement = farmer.agreement  # This will be 'None', 'Kapkures AGC', or 'Blue Hills AGC'
+            total_payment = price_per_kilo * harvest.quantity  # Calculate total payment based on the harvest quantity
+
+            if agreement and agreement != 'None':
+                church = agreement  # Use the agreement value as the church identifier
+                church_cut = total_payment * 0.10  # Deduct 10% for the church
+                amount_received = total_payment - church_cut
+            else:
+                church = None  # No agreement, so church is null
+                church_cut = 0  # No deduction
+                amount_received = total_payment  # Farmer receives the full amount
+
+            # Create payment record
+            Payment.objects.create(
+                farmer=farmer,
+                harvest=harvest,
+                church=church,  # This will be null if no agreement
+                berry_type=berry_type,
+                amount=total_payment,
+                amount_received=amount_received,
+                price_per_kilo=price_per_kilo
+            )
+
+            # Deduct the payment from the farmer's balance
+            farmer.balance -= amount_received
+            farmer.save()
+
+            # Append to payment summary
+            payment_summary.append({
+                'farmer_name': farmer.name,
+                'church_deduction': church_cut,
+                'net_payment': amount_received
+            })
+
+        messages.success(request, 'Payments processed successfully.')
+        return render(request, 'payment_form.html', {'payment_summary': payment_summary})
+
+    # Render the payment form again if the request method is not POST
+    harvests = Harvest.objects.filter(is_active=True)  # Assuming you have a way to mark active harvests
+    return render(request, 'admin/payment_form.html', {'harvests': harvests})
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Harvest, Season
+from django.db.models import Q
+from datetime import date
+
+def select_harvest_for_payment(request):
+    today = date.today()  # Get current date
+
+    # Filter harvests based on active seasons
+    active_seasons = Season.objects.filter(
+        Q(start_date__lte=today) & (Q(end_date__gte=today) | Q(end_date__isnull=True))
+    )  # Include seasons with open-ended dates
+    harvests = Harvest.objects.filter(season__in=active_seasons)
+
+    if request.method == 'POST':
+        selected_harvest_id = request.POST.get('harvest')
+        try:
+            selected_harvest = Harvest.objects.get(pk=selected_harvest_id)
+
+            # Store selection in session
+            request.session['selected_harvest_id'] = selected_harvest_id
+
+            messages.success(request, f"Harvest '{selected_harvest.name}' selected successfully.")
+            return redirect('process_payments', selected_harvest_id=selected_harvest.id)  # Redirect to payment processing view
+        except Harvest.DoesNotExist:
+            messages.error(request, 'Invalid harvest selection. Please try again.')
+
+    # Optionally retrieve the selected harvest from the session
+    selected_harvest_id = request.session.get('selected_harvest_id')
+
+    return render(request, 'admin/select_harvest.html', {'harvests': harvests, 'selected_harvest_id': selected_harvest_id})
+
+def process_payments(request, selected_harvest_id):
+    selected_harvest = Harvest.objects.get(id=selected_harvest_id)
+
+    if request.method == 'POST':
+        berry_type = request.POST.get('berry_type')
+        price_per_kilo = float(request.POST.get('price_per_kilo'))
+
+        payment_summary = []
+        farmers = Farmer.objects.all()
+
+        total_kapkures_deduction = 0
+        total_blue_hills_deduction = 0
+        total_net_payment = 0
+
+        for farmer in farmers:
+            # Get the fields associated with the farmer
+            fields = Field.objects.filter(farmer=farmer, harvest=selected_harvest)
+
+            total_payment = 0  # Initialize total payment for the farmer
+
+            for field in fields:
+                # Retrieve weights based on the berry type
+                if berry_type == 'cherry':
+                    cherry_weight = CherryWeight.objects.filter(field=field).first()
+                    if cherry_weight:
+                        total_payment += price_per_kilo * cherry_weight.weight
+                elif berry_type == 'mbuni':
+                    mbuni_weight = MbuniWeight.objects.filter(field=field).first()
+                    if mbuni_weight:
+                        total_payment += price_per_kilo * mbuni_weight.weight
+
+            # Check the farmer's agreement
+            agreement = farmer.agreement  # This will be 'None', 'Kapkures AGC', or 'Blue Hills AGC'
+
+            # Initialize church deductions
+            kapkures_deduction = 0
+            blue_hills_deduction = 0
+
+            if agreement == 'Kapkures  AGC':
+                kapkures_deduction = total_payment * 0.10  # Deduct 10% for Kapkures
+            elif agreement == 'Blue Hills AGC':
+                blue_hills_deduction = total_payment * 0.10  # Deduct 10% for Blue Hills
+
+            # Calculate amount received
+            amount_received = total_payment - (kapkures_deduction + blue_hills_deduction)
+
+            # Create payment record
+            Payment.objects.create(
+                farmer=farmer,
+                harvest=selected_harvest,
+                church=agreement,
+                berry_type=berry_type,
+                amount=total_payment,
+                amount_received=amount_received,
+                price_per_kilo=price_per_kilo
+            )
+
+            # Append to payment summary
+            payment_summary.append({
+                'farmer_number': farmer.number,
+                'farmer_name': farmer.name,
+                'kapkures_deduction': kapkures_deduction,
+                'blue_hills_deduction': blue_hills_deduction,
+                'net_payment': amount_received
+            })
+
+            # Update totals
+            total_kapkures_deduction += kapkures_deduction
+            total_blue_hills_deduction += blue_hills_deduction
+            total_net_payment += amount_received
+
+        messages.success(request, 'Payments processed successfully.')
+        return render(request, 'admin/payment_summary.html', {
+            'payment_summary': payment_summary,
+            'selected_harvest': selected_harvest,
+            'total_kapkures_deduction': total_kapkures_deduction,
+            'total_blue_hills_deduction': total_blue_hills_deduction,
+            'total_net_payment': total_net_payment
+        })
+
+    return render(request, 'admin/payment_form.html', {'selected_harvest': selected_harvest})

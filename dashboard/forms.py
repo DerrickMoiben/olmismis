@@ -17,9 +17,16 @@ class LoginForm(forms.Form):
 
 
 class FarmerForm(forms.ModelForm):
+    AGREEMENT_CHOICES = [
+        ('None', 'None'),
+        ('Kapkures  AGC', 'Kapkures AGC'),
+        ('Blue Hills AGC', 'Blue Hills AGC'),
+    ]
+    
+    agreement = forms.ChoiceField(choices=AGREEMENT_CHOICES, required=True)
     class Meta:
         model = Farmer
-        fields = ['name', 'phone', 'location', 'id_number']
+        fields = ['name', 'phone', 'location', 'id_number', 'agreement']
 
     def clean(self):
         cleaned_data = super().clean()

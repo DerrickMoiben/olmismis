@@ -13,6 +13,7 @@ from apis.sms import send_sms
 from escpos.printer import Usb
 from datetime import datetime, timedelta
 from django.http import JsonResponse
+from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -247,6 +248,7 @@ def print_farmer_report(request):
 #     }
 #     return render(request, 'edit_farmers.html', context)
 
+
 @login_required
 @csrf_protect
 def edit_farmer(request, farmer_id):
@@ -274,12 +276,12 @@ def edit_farmer(request, farmer_id):
                         farmer.save()
 
                     messages.success(request, 'Farmer details updated successfully.')
-                    return redirect('all-farmers')
+                    return redirect('edit_farmer', farmer_id=farmer.id)  # Redirect with farmer_id
             else:
                 # Save the farmer without changing the number
                 edited_farmer.save()
                 messages.success(request, 'Farmer details updated successfully.')
-                return redirect('all-farmers')
+                return redirect('edit_farmer', farmer_id=farmer.id)  # Redirect with farmer_id
         else:
             messages.error(request, 'Failed to update farmer details. Please correct the errors below.')
     else:
@@ -289,7 +291,7 @@ def edit_farmer(request, farmer_id):
         'form': form,
         'farmer': farmer,
     }
-    return render(request, 'edit_farmers.html', context)
+    return render(request, 'edit_farmer.html', context)
 
 
 

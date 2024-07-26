@@ -15,9 +15,16 @@ class LoginboardForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 class FarmerEditForm(forms.ModelForm):
+    AGREEMENT_CHOICES = [
+        ('None', 'None'),
+        ('Kapkures  AGC', 'Kapkures AGC'),
+        ('Blue Hills AGC', 'Blue Hills AGC'),
+    ]
+    
+    agreement = forms.ChoiceField(choices=AGREEMENT_CHOICES, required=True)
     class Meta:
         model = Farmer
-        fields = ['name', 'phone', 'location', 'id_number', 'number']
+        fields = ['name', 'phone', 'location', 'id_number', 'number', 'agreement']
 
 class FarmerAddForm(forms.ModelForm):
     class Meta:
