@@ -1,7 +1,9 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
-from .forms import AnnouncementsForm, HarvestForm, SeasonForm, SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm
+
+from board.models import EditRequest
+from .forms import AnnouncementsForm, CashierEditForm, HarvestForm, SeasonForm, SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm
 from .models import Farmer, Field, CherryWeight, Harvest, MbuniWeight, Season
 import logging
 from django.views.decorators.csrf import csrf_protect
@@ -810,3 +812,34 @@ def process_payments(request, selected_harvest_id):
         })
 
     return render(request, 'admin/payment_form.html', {'selected_harvest': selected_harvest})
+
+
+def cashier_edit_weight(request):
+    # Retrieve the selected harvest from the session
+    selected_harvest_id = request.session.get('selected_harvest_id')
+    selected_harvest = Harvest.objects.filter(pk=selected_harvest_id).first() if selected_harvest_id else None
+
+    if request.method == 'POST':
+        edit_form = CashierEditForm(request.POST, selected_harvest_id=selected_harvest_id)  # Pass the harvest ID
+        if edit_form.is_valid():
+            # Create an EditRequest instead of directly updating the weight
+            edit_request = EditRequest(
+                farmer=edit_form.cleaned_data['farmer'],
+                berry_type=edit_form.cleaned_data['berry_type'],
+                current_weight=edit_form.cleaned_data['current_weight'],
+                new_weight=edit_form.cleaned_data['new_weight'],
+                harvest=selected_harvest,
+                cashier=request.user  # Assuming the cashier is logged in
+            )
+            edit_request.save()
+
+            messages.success(request, 'Edit request submitted successfully.')
+            return redirect('cashier-dashboard')
+
+    else:
+        edit_form = CashierEditForm(selected_harvest_id=selected_harvest_id)  # Pass the harvest ID
+
+    return render(request, 'edit_weight.html', {
+        'edit_form': edit_form,
+        'selected_harvest': selected_harvest
+    })

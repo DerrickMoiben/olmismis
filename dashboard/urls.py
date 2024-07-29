@@ -22,4 +22,5 @@ urlpatterns = [
     # path('delete_harvest/<int:harvest_id>/', views.delete_harvest, name='delete_harvest')
     path('select_harvest_for_payment/', views.select_harvest_for_payment, name='select_harvest_for_payment'),  # URL for selecting harvest
     path('process-payments/<int:selected_harvest_id>/', views.process_payments, name='process_payments'),  # URL for processing payments
+    path('cashier_edit_weight/', views.cashier_edit_weight, name='cashier_edit_weight'),  # URL for editing weig
 ]

@@ -2,6 +2,7 @@ import json
 import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
+from board.models import EditRequest
 from dashboard.models import Farmer, CherryWeight, MbuniWeight
 from dashboard.forms import FarmerForm
 from .forms import FarmerAddForm, FarmerEditForm, SignupForm, LoginboardForm
@@ -328,3 +329,41 @@ def add_farmer_with_number(request):
         'form': form,
     }
     return render(request, 'addfarmer.html', context)
+
+
+
+def admin_edit_requests(request):
+    edit_requests = EditRequest.objects.filter(status='Pending')
+
+    return render(request, 'edit_requests.html', {'edit_requests': edit_requests})
+
+def approve_edit_request(request, request_id):
+    edit_request = get_object_or_404(EditRequest, pk=request_id)
+    
+    # Update the corresponding weight entry based on the request
+    if edit_request.berry_type == 'cherry':
+        cherry_weight = CherryWeight.objects.filter(field__farmer=edit_request.farmer, field__harvest=edit_request.harvest).first()
+        if cherry_weight:
+            cherry_weight.weight = edit_request.new_weight
+            cherry_weight.save()
+
+    elif edit_request.berry_type == 'mbuni':
+        mbuni_weight = MbuniWeight.objects.filter(field__farmer=edit_request.farmer, field__harvest=edit_request.harvest).first()
+        if mbuni_weight:
+            mbuni_weight.weight = edit_request.new_weight
+            mbuni_weight.save()
+
+    # Update the edit request status
+    edit_request.status = 'Approved'
+    edit_request.save()
+
+    messages.success(request, 'Edit request approved successfully.')
+    return redirect('admin_edit_requests')
+
+def reject_edit_request(request, request_id):
+    edit_request = get_object_or_404(EditRequest, pk=request_id)
+    edit_request.status = 'Rejected'
+    edit_request.save()
+
+    messages.info(request, 'Edit request rejected.')
+    return redirect('admin_edit_requests')

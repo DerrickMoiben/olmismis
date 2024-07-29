@@ -10,4 +10,7 @@ urlpatterns = [
     path('print-farmer-report/', views.print_farmer_report, name='print-farmer-report'),
     path('edit_farmer/<int:farmer_id>/', views.edit_farmer, name='edit_farmer'),
     path('add_farmer_with_number/', views.add_farmer_with_number, name='add_farmer_with_number'),
+    path('admin/edit-requests/', views.admin_edit_requests, name='admin_edit_requests'),
+    path('admin/approve-request/<int:request_id>/', views.approve_edit_request, name='approve_edit_request'),
+    path('admin/reject-request/<int:request_id>/', views.reject_edit_request, name='reject_edit_request'),
 ]

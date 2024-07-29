@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
+    <title>Cashier Dashboard</title>
     <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 </head>
 <body style="padding: 0; margin: 0;">
@@ -13,25 +13,30 @@
             <li><a href="{% url 'register-new-farmer' %}">Register New Farmer</a></li>
             <li><a href="{% url 'print-farmer-report' %}">Print Report</a></li>
             <li><a href="{% url 'land_page' %}">Home</a></li>
+            <li><a href="{% url 'cashier_edit_weight' %}">Edit Coffee Weight</a></li> 
         </ul>
     </nav>
     <div class="container">
-        <h1>Welcome to Admin Dashboard</h1>
-        <form method="post" class="custom-form">
+        <h1>Welcome to Cashier Dashboard</h1>
+
+        <!-- Coffee Berries Entry Form -->
+        <form method="post" class="custom-form" name="update_weight">
             <h2>Update Coffee Weight</h2>
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Update Weight</button>
         </form>
+
+
+        {% if messages %}
+            <div class="message-container">
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
     </div>
-    {% if messages %}
-        <div class="message-container">
-            <ul class="messages">
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
 </body>
 </html>

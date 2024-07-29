@@ -1,0 +1,81 @@
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 20px;
+    }
+    h2 {
+        color: #4CAF50;
+        text-align: center;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    tr:hover {
+        background-color: #ddd;
+    }
+    a {
+        text-decoration: none;
+        padding: 8px 12px;
+        margin: 0 5px;
+        border-radius: 5px;
+        color: white;
+    }
+    .approve {
+        background-color: #4CAF50; /* Green */
+    }
+    .reject {
+        background-color: #f44336; /* Red */
+    }
+    .approve:hover {
+        background-color: #45a049;
+    }
+    .reject:hover {
+        background-color: #e53935;
+    }
+</style>
+
+<div>
+    <h2>Pending Edit Requests</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Farmer</th>
+                <th>Berry Type</th>
+                <th>Current Weight</th>
+                <th>New Weight</th>
+                <th>Harvest</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in edit_requests %}
+                <tr>
+                    <td>{{ request.farmer.name }}</td>
+                    <td>{{ request.berry_type }}</td>
+                    <td>{{ request.current_weight }}</td>
+                    <td>{{ request.new_weight }}</td>
+                    <td>{{ request.harvest.name }}</td>
+                    <td>
+                        <a href="{% url 'approve_edit_request' request.id %}" class="approve">Approve</a>
+                        <a href="{% url 'reject_edit_request' request.id %}" class="reject">Reject</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -79,3 +79,49 @@ class HarvestForm(forms.ModelForm):
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date', 'required': False}),
         }
+
+from django import forms
+from .models import Farmer, CherryWeight, MbuniWeight
+
+class CashierEditForm(forms.Form):
+    farmer_number = forms.CharField(max_length=100, label='Farmer Number')
+    berry_type = forms.ChoiceField(choices=[('cherry', 'Cherry'), ('mbuni', 'Mbuni')], label='Berry Type')
+    current_weight = forms.FloatField(label='Current Weight', required=False)
+    new_weight = forms.FloatField(label='New Weight')
+
+    def __init__(self, *args, **kwargs):
+        # Extract the selected_harvest_id from kwargs
+        self.selected_harvest_id = kwargs.pop('selected_harvest_id', None)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        farmer_number = cleaned_data.get('farmer_number')
+        berry_type = cleaned_data.get('berry_type')
+
+        # Validate that the farmer exists
+        try:
+            farmer = Farmer.objects.get(number=farmer_number)
+            cleaned_data['farmer'] = farmer
+        except Farmer.DoesNotExist:
+            raise forms.ValidationError("Farmer with this number does not exist.")
+
+        # Validate that the selected harvest ID is available
+        if self.selected_harvest_id is None:
+            raise forms.ValidationError("No harvest selected. Please select a harvest.")
+
+        # Validate current weight based on berry type and harvest
+        if berry_type == 'cherry':
+            cherry_weight = CherryWeight.objects.filter(field__farmer=cleaned_data['farmer'], field__harvest_id=self.selected_harvest_id).first()
+            if cherry_weight:
+                cleaned_data['current_weight'] = cherry_weight.weight
+            else:
+                raise forms.ValidationError("No cherry weight found for this farmer in the selected harvest.")
+        elif berry_type == 'mbuni':
+            mbuni_weight = MbuniWeight.objects.filter(field__farmer=cleaned_data['farmer'], field__harvest_id=self.selected_harvest_id).first()
+            if mbuni_weight:
+                cleaned_data['current_weight'] = mbuni_weight.weight
+            else:
+                raise forms.ValidationError("No mbuni weight found for this farmer in the selected harvest.")
+
+        return cleaned_data
