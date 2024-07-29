@@ -18,7 +18,7 @@
     </nav>
     <div class="container">
         <h1>Cashier Dashboard</h1>
-        <form method="post" class="custom-form">
+        <form method="post" class="custom-form" id="coffee-form">
             <h2>Update Coffee Weight</h2>
             {% csrf_token %}
             {{ form.as_p }}
@@ -34,5 +34,16 @@
             </ul>
         </div>
     {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('coffee-form');
+            var successMessage = '{% if messages %}{% for message in messages %}{{ message }}{% endfor %}{% endif %}';
+
+            if (successMessage.includes('successfully')) {
+                form.reset();
+            }
+        });
+    </script>
 </body>
 </html>

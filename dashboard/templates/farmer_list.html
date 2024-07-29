@@ -1,0 +1,15 @@
+<h2>Farmers for Harvest: {{ selected_harvest.name }}</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Farmer Name</th>
+            </tr>
+    </thead>
+    <tbody>
+        {% for farmer in farmers %}
+        <tr>
+            <td>{{ farmer.name }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

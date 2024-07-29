@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Farmers</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier Farmers</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
         form {
-            margin-left: 100px;
-            align-items: end;
+            margin-bottom: 20px;
         }
         input[type=text] {
             width: 20%;
@@ -14,10 +24,10 @@
             box-sizing: border-box;
         }
         button {
-            background-color: #4CAF50;
+            background-color: #26834a;
             border: none;
             color: white;
-            padding: 15px 32px;
+            padding: 12px 20px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
@@ -29,21 +39,19 @@
         button:hover {
             background-color: #45a049;
         }
-        h2 {
-            margin-top: 20px;
-        }
-        
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
+            text-align: left;
         }
         th {
-            background-color: #f2f2f2;
-            text-align: left;
+            background-color: #44a354;
+            color: white;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
@@ -51,59 +59,11 @@
         tr:hover {
             background-color: #ddd;
         }
-        .delete-button {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        a {
-            text-decoration: none;
-            color: blue;
-        }
-        
-        /* Message Styles */
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin-top: 20px;
-        }
-        
-        ul li {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .btn {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .btn:hover {
-            background-color: #45a049;
-        }
         .btn-primary {
             background-color: #007bff;
             border: none;
             color: white;
-            padding: 15px 32px;
+            padding: 12px 20px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
@@ -115,47 +75,65 @@
         .btn-primary:hover {
             background-color: #0069d9;
         }
+        /* Message Styles */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        ul li {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
-    <h2>Farmers List and Coffee Weights</h2>
-    <a href="{% url 'cashier-dashboard' %}" class="btn-primary">Back</a>
-    <form action="{% url 'cashier-farmers' %}" method="get">
-        <input type="text" name="search" placeholder="search farmer" value="{{ search_query }}">
-        <button type="submit">Search</button>
-    </form>
-    {% if farmers %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Number</th>
-                    <th>Name</th>
-                    <th>Cherry Coffee Weight (kg)</th>
-                    <th>Mbuni Coffee Weight (kg)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for farmer in farmers %}
-                <tr>
-                    <td>{{ farmer.number }}</td>
-                    <td>{{ farmer.name }}</td>
-                    <td>{{ farmer.total_cherry_weight|default_if_none:0|floatformat:2 }}</td>
-                    <td>{{ farmer.total_mbuni_weight|default_if_none:0|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <p>Total Cherry Weight: {{ total_cherry_weight|default_if_none:0|floatformat:2 }} kg</p>
-        <p>Total Mbuni Weight: {{ total_mbuni_weight|default_if_none:0|floatformat:2 }} kg</p>
-    {% else %}
-        <p>No farmers found.</p>
-    {% endif %}
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+
+<h1>Farmers for Harvest: {{ selected_harvest.name }}</h1>
+
+<!-- Search Query Form -->
+<form method="GET" action="">
+    <input type="text" name="search" placeholder="Search for farmers..." value="{{ request.GET.search }}">
+    <button type="submit">Search</button>
+</form>
+
+<!-- Back to Cashier Dashboard Button -->
+<a href="{% url 'cashier-dashboard' %}" class="btn-primary">Back</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Farmer Number</th>
+            <th>Farmer Name</th>
+            <th>Total Cherry Weight</th>
+            <th>Total Mbuni Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in farmer_data %}
+        <tr>
+            <td>{{ data.farmer.number }}</td>
+            <td>{{ data.farmer.name }}</td>
+            <td>{{ data.cherry_weight_sum|floatformat:1 }} kg</td>
+            <td>{{ data.mbuni_weight_sum|floatformat:1 }} kg</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No farmers found for this harvest.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2"><strong>Total:</strong></td>
+            <td><strong>{{ total_cherry_weight|floatformat:1 }} kg</strong></td>
+            <td><strong>{{ total_mbuni_weight|floatformat:1 }} kg</strong></td>
+        </tr>
+    </tfoot>
+</table>
+
 </body>
 </html>

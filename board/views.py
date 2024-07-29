@@ -12,8 +12,8 @@ from django.contrib.auth.decorators import login_required
 from apis.sms import send_sms
 from escpos.printer import Usb
 from datetime import datetime, timedelta
-import win32print
 from django.http import JsonResponse
+from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -164,13 +164,14 @@ def delete_farmer(request, farmer_id):
     return redirect('all-farmers')
 
 
+
+@login_required
 @csrf_protect
 def print_farmer_report(request):
     try:
         farmers = Farmer.objects.all()
         total_cherry_weight = 0
         total_mbuni_weight = 0
-
 
         for farmer in farmers:
             farmer_fields = farmer.field_set.all()
@@ -181,7 +182,6 @@ def print_farmer_report(request):
             total_cherry_weight += farmer_cherry_weight
             total_mbuni_weight += farmer_mbuni_weight
 
-
         # Prepare context for rendering
         context = {
             'farmers': farmers,
@@ -189,40 +189,35 @@ def print_farmer_report(request):
             'total_mbuni_weight': total_mbuni_weight,
         }
 
-        # Set the printer name
-        printer_name = "EPSON L3250 Series"
+        # Set up the ESC/POS printer (adjust parameters according to your printer's setup)
+        printer = Usb(0x04b8, 0x0202)  # Replace with your printer's vendor and product ID
 
         # Construct the content to be printed
-        content = "========================================\n"
-        content += "OLMISMIS FCS Ltd\n"
-        content += "========================================\n"
-        content += "Farmers Report\n"
-        content += "========================================\n"
+        content = (
+            "========================================\n"
+            "OLMISMIS FCS Ltd\n"
+            "========================================\n"
+            "Farmers Report\n"
+            "========================================\n"
+        )
         for farmer in farmers:
-            content += f"Farmer Name: {farmer.name}\n"
-            content += f"Farmer Number: {farmer.number}\n"
-            # content += f"Total Coffee Weight: {farmer.coffee_weight} kgs\n"
-            content += f"Total Cherry Weight: { farmer.total_cherry_weight} kgs\n"
-            content += f"Total Mbuni Weight: { farmer.total_mbuni_weight} kgs\n"
-            content += "========================================\n"
-        content += f"Total Cherry Weight: {total_cherry_weight} kgs\n"
-        content += f"Total Mbuni Weight: {total_mbuni_weight} kgs\n"
-        content += "========================================\n\n\n"
+            content += (
+                f"Farmer Name: {farmer.name}\n"
+                f"Farmer Number: {farmer.number}\n"
+                f"Total Cherry Weight: {farmer.total_cherry_weight} kgs\n"
+                f"Total Mbuni Weight: {farmer.total_mbuni_weight} kgs\n"
+                "========================================\n"
+            )
+        content += (
+            f"Total Cherry Weight: {total_cherry_weight} kgs\n"
+            f"Total Mbuni Weight: {total_mbuni_weight} kgs\n"
+            "========================================\n\n\n"
+        )
 
         try:
-            # Open the printer and start a document
-            printer_handle = win32print.OpenPrinter(printer_name)
-            job_handle = win32print.StartDocPrinter(printer_handle, 1, ("Farmers Report", None, "RAW"))
-            win32print.StartPagePrinter(printer_handle)
-
-            # Write the content to the printer
-            win32print.WritePrinter(printer_handle, content.encode('utf-8'))
-
-            # End the page and document, then close the printer
-            win32print.EndPagePrinter(printer_handle)
-            win32print.EndDocPrinter(printer_handle)
-            win32print.ClosePrinter(printer_handle)
-
+            # Print content
+            printer.text(content)
+            printer.cut()
             messages.success(request, 'Report printed successfully.')
 
         except Exception as e:
@@ -232,7 +227,6 @@ def print_farmer_report(request):
         messages.error(request, f'Error fetching data: {e}')
 
     return render(request, 'all_farmers.html', context)
-
 
 
 # @login_required
@@ -263,41 +257,62 @@ def edit_farmer(request, farmer_id):
         form = FarmerEditForm(request.POST, instance=farmer)
         if form.is_valid():
             edited_farmer = form.save(commit=False)
-            
-            # Check if the number is being changed
+
             new_number = edited_farmer.number
             if new_number != farmer.number:
-                # Ensure no other farmer has the same number
                 if Farmer.objects.filter(number=new_number).exists():
                     messages.error(request, f'Farmer number {new_number} already exists.')
                 else:
-                    # Save the farmer with the new number
                     edited_farmer.save()
-                    
-                    # Update the sequence of all farmers' numbers
                     farmers = Farmer.objects.all().order_by('id')
                     for index, farmer in enumerate(farmers, start=1):
                         farmer.number = f'{index:03}'
                         farmer.save()
 
                     messages.success(request, 'Farmer details updated successfully.')
-                    return redirect('all-farmers')
+                    return redirect('edit_farmer', farmer_id=farmer.id)
             else:
-                # Save the farmer without changing the number
                 edited_farmer.save()
                 messages.success(request, 'Farmer details updated successfully.')
-                return redirect('all-farmers')
+
+            # Handle cherry and mbuni weights
+            field = farmer.field_set.first()
+            if field:
+                # Update or create cherry weight
+                cherry_weight, created = CherryWeight.objects.get_or_create(field=field)
+                cherry_weight_weight = form.cleaned_data.get('cherry_weight')
+                if cherry_weight_weight is not None:  # Ensure weight is provided
+                    cherry_weight.weight = cherry_weight_weight
+                else:
+                    cherry_weight.weight = 0  # Or handle it as per your requirement
+                cherry_weight.save()
+
+                # Update or create mbuni weight
+                mbuni_weight, created = MbuniWeight.objects.get_or_create(field=field)
+                mbuni_weight_weight = form.cleaned_data.get('mbuni_weight')
+                if mbuni_weight_weight is not None:  # Ensure weight is provided
+                    mbuni_weight.weight = mbuni_weight_weight
+                else:
+                    mbuni_weight.weight = 0  # Or handle it as per your requirement
+                mbuni_weight.save()
+
+                messages.success(request, 'Farmer details and weights updated successfully.')
+                return redirect('edit_farmer', farmer_id=farmer.id)
         else:
             messages.error(request, 'Failed to update farmer details. Please correct the errors below.')
     else:
-        form = FarmerEditForm(instance=farmer)
+        field = farmer.field_set.first()
+        initial_data = {
+            'cherry_weight': field.cherryweight_set.first().weight if field and field.cherryweight_set.exists() else 0,
+            'mbuni_weight': field.mbuniweight_set.first().weight if field and field.mbuniweight_set.exists() else 0,
+        }
+        form = FarmerEditForm(instance=farmer, initial=initial_data)
 
     context = {
         'form': form,
         'farmer': farmer,
     }
     return render(request, 'edit_farmers.html', context)
-
 
 
 @login_required

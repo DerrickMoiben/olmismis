@@ -141,6 +141,7 @@
                     <th>ID</th>
                     <th>Cherry Coffee Weight (kg)</th>
                     <th>Mbuni Coffee Weight (kg)</th>
+                    <th>Agreement</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -154,6 +155,7 @@
                     <td>{{ farmer.id_number}}</td>
                     <td>{{ farmer.total_cherry_weight|default_if_none:0|floatformat:2 }}</td>
                     <td>{{ farmer.total_mbuni_weight|default_if_none:0|floatformat:2 }}</td>
+                    <td>{{ farmer.agreement }}</td>
                     <td>
                         <form action="{% url 'delete-farmer' farmer.id %}" method="post" style="display:inline;" onsubmit="return confirmDelete('{{ farmer.name }}');">
                             {% csrf_token %}

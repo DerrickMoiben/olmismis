@@ -1,0 +1,18 @@
+<table>
+    <thead>
+        <tr>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Season</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for harvest in harvests %}
+        <tr>
+            <td>{{ harvest.start_date }}</td>
+            <td>{{ harvest.end_date }}</td>
+            <td>{{ harvest.season.name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

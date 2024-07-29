@@ -18,8 +18,48 @@
             border-right: none;
         }
 
-        input[type= "number"]::-moz-list-number {
+        input[type="number"]::-moz-list-number {
             display: none;
+        }
+
+        .custom-form {
+            max-width: 400px; /* Set a max width for the form */
+            margin: auto; /* Center the form */
+        }
+
+        .btn {
+            background-color: #4CAF50; /* Green background */
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        label {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .message-list {
+            color: red; /* Error messages in red */
+            list-style-type: none;
+            padding: 0;
         }
     </style>
 </head>
@@ -29,29 +69,39 @@
         <form method="post" class="custom-form" id="form">
             {% csrf_token %}
 
-            {% if messages %}
-            <ul>
+            <label for="name">Name</label>
+            <input type="text" placeholder="Enter your full name" name="name" required>
+
+            <label for="phone">Phone</label>
+            <div class="body">
+                <div class="format">+254</div>
+                <input type="text" name="phone" id="phone" placeholder="Enter your number" maxlength="18" required>
+            </div>
+            
+            <label for="location">Location</label>
+            <input type="text" name="location" placeholder=".e.g Kipkelion" required>
+
+            <label for="id_number">ID Number</label>
+            <input type="number" name="id_number" placeholder="Enter your ID number" required>
+
+            <label for="agreement">Do you have an agreement with a church?</label>
+            <select name="agreement" id="agreement" required>
+                <option value="None">No Agreement</option>
+                <option value="Kapkures  AGC">Yes, Kapkures AGC</option>
+                <option value="Blue Hills AGC">Yes, Blue Hills AGC</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Register</button>
+            <a href="{% url 'cashier-dashboard' %}">Back</a>
+        </form>
+
+        {% if messages %}
+            <ul class="message-list">
                 {% for message in messages %}
                     <li>{{ message }}</li>
                 {% endfor %}
             </ul>
-            {% endif %}
-
-            <label for="">Name</label>
-            <input type="text" placeholder="Enter your full name" name="name">
-            <label for="phone">Phone</label>
-            <div class="body">
-                <div class="format">+254</div>
-                <input type="text" name="phone" id="phone" placeholder="Enter your number" maxlength="14">
-            </div>
-            
-            <label for="">Location</label>
-            <input type="text" name="location" id="" placeholder=".e.g Kipkelion">
-            <label for="">Id number</label>
-            <input type="number" name="id_number" id="" placeholder="Enter your id number">
-            <button type="submit" class="btn btn-primary">Register</button>
-            <a href="{% url 'cashier-dashboard' %}">Back</a>
-        </form>
+        {% endif %}
     </div>
 
     <script>
@@ -67,25 +117,6 @@
                 });
                     
                 console.log(data);
-
-                fetch ("{ url 'register-new-farmer' }", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    if (data.status == 'success') {
-                        alert('Farmer registered successfully');
-                        window.location.href = '/admin/dashboard';
-                    } else {
-                        alert('Failed to register farmer');
-                    }
-                })
             });
         }
     </script>
