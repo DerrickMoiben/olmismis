@@ -1,0 +1,228 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9; /* Light background for contrast */
+  }
+  
+  /* Navbar Styles */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .navbar h1 {
+    margin: 0;
+    padding-left: 10px;
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    position: fixed;
+    top: 50px; /* Below the navbar */
+    left: -250px; /* Start hidden */
+    width: 250px;
+    height: calc(100% - 50px); /* Full height minus navbar */
+    background-color: #e8f5e9; /* Light green */
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+  
+  .sidebar.active {
+    left: 0; /* Show sidebar */
+  }
+  
+  .sidebar h1 {
+    padding: 10px;
+    margin: 0;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    padding: 10px;
+  }
+  
+  .sidebar ul li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+  }
+  
+  .sidebar ul li a:hover {
+    background-color: #c8e6c9; /* Highlight on hover */
+  }
+  
+  /* Main Content Styles */
+  .main-content {
+    margin-top: 50px; /* Space for navbar */
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+  }
+  
+  /* Board Member Slider Styles */
+  .board-member-slider {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* Board Member Card Styles */
+  .board-member-card {
+    position: relative; /* Position relative for absolute overlay */
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    min-width: 120px; /* Reduced minimum width for cards */
+    max-width: 150px; /* Set a maximum width to keep cards small */
+    text-align: center;
+    overflow: hidden; /* Hide overflow for the overlay */
+  }
+  
+  .board-member-card .card-content {
+    position: relative;
+  }
+  
+  .board-member-card img {
+    width: 80px; /* Reduced size for circular images */
+    height: 80px; /* Reduced size for circular images */
+    border-radius: 50%; /* Circular shape */
+    object-fit: cover; /* Maintain aspect ratio */
+  }
+  
+  .overlay {
+    position: absolute;
+    bottom: 10px; /* Position it towards the bottom */
+    left: 5px; /* Add some left margin */
+    right: 5px; /* Add some right margin */
+    background-color: teal; /* Dark overlay */
+    color: white;
+    padding: 5px; /* Add some padding */
+    border-radius: 5px; /* Rounded corners for the overlay */
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.3s ease; /* Smooth transition */
+    text-align: center; /* Center text */
+  }
+  
+  .board-member-card:hover .overlay {
+    opacity: 1; /* Show overlay on hover */
+  }
+  
+  /* Search Farmer Section */
+  .search-farmer {
+    padding: 20px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .search-farmer form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .search-farmer input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 300px;
+    margin-right: 10px;
+  }
+
+  .search-farmer button {
+    padding: 10px 20px;
+    background-color: #37b948;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .search-farmer button:hover {
+    background-color: #2e9b3b;
+  }
+
+  .search-farmer h3 {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+  }
+
+  .search-farmer ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .search-farmer li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    background-color: #fff;
+    transition: background-color 0.3s ease;
+  }
+
+  .search-farmer li:hover {
+    background-color: #f5f5f5;
+  }
+
+  .search-farmer li a {
+    color: #37b948;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .search-farmer li a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Dashboard Section */
+  .dashboard {
+    margin-top: 20px;
+  }
+  
+  .dashboard-widgets {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .widget {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px; /* Space between widgets */
+  }
+  
+  /* Footer Styles */
+  footer {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    text-align: center;
+    padding: 5px;
+  }
+  

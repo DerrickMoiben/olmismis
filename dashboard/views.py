@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
-from .forms import AnnouncementsForm, HarvestForm, SeasonForm, SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm
+from .forms import AnnouncementsForm, HarvestForm, SeasonForm, SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm, CashierEditForm
 from .models import Farmer, Field, CherryWeight, Harvest, MbuniWeight, Payment, Season
 import logging
 from django.views.decorators.csrf import csrf_protect
@@ -17,6 +17,7 @@ from django.db.models import Q
 from datetime import datetime
 import win32print
 import win32api
+from board.models import  EditRequest
 
 logger = logging.getLogger(__name__)
 
@@ -141,8 +142,8 @@ def register_new_farmer(request):
         'form': form
     })
 
-""""now unaona hii inatuma sms as per the harvest wacha ni weke njo after kutest to delete hii"""
-# Replace the win32print code in cashier_dashboard view
+# """"now unaona hii inatuma sms as per the harvest wacha ni weke njo after kutest to delete hii"""
+# # Replace the win32print code in cashier_dashboard view
 # @csrf_protect
 # def cashier_dashboard(request):
 #     # Retrieve the selected harvest from the session
@@ -264,127 +265,9 @@ def register_new_farmer(request):
 
 
 
-# @csrf_protect
-# def cashier_dashboard(request):
-#     # Retrieve the selected harvest from the session
-#     selected_harvest_id = request.session.get('selected_harvest_id')
-#     try:
-#         selected_harvest = Harvest.objects.get(pk=selected_harvest_id)
-#     except Harvest.DoesNotExist:
-#         selected_harvest = None
 
-#     if request.method == 'POST':
-#         form = CoffeeBerriesForm(request.POST)
-#         if form.is_valid():
-#             farmer_number = form.cleaned_data['farmer_number']
-#             berry_type = form.cleaned_data['berry_type']
-#             weight = form.cleaned_data['weight']
-            
-#             farmer = Farmer.objects.filter(number=farmer_number).first()
-#             if farmer:
-#                 phone_number = farmer.phone
-#                 try:
-#                     # Ensure there's a default field for the farmer
-#                     field, created = Field.objects.get_or_create(
-#                         farmer=farmer, 
-#                         field_name="Default Field Name",
-#                         harvest=selected_harvest  # Associate with the selected harvest
-#                     )
-                    
-#                     if berry_type == 'cherry':
-#                         cherry_weight, created = CherryWeight.objects.get_or_create(
-#                             field=field, 
-#                             defaults={'weight': weight}
-#                         )
-#                         if not created:
-#                             cherry_weight.weight += weight
-#                             cherry_weight.save()
-                        
-#                         # Calculate total cherry weight for the entire season
-#                         total_cherry_weight = CherryWeight.objects.filter(
-#                             field__in=Field.objects.filter(farmer=farmer)
-#                         ).aggregate(Sum('weight'))['weight__sum'] or 0
-
-#                     elif berry_type == 'mbuni':
-#                         mbuni_weight, created = MbuniWeight.objects.get_or_create(
-#                             field=field, 
-#                             defaults={'weight': weight}
-#                         )
-#                         if not created:
-#                             mbuni_weight.weight += weight
-#                             mbuni_weight.save()
-                        
-#                         # Calculate total mbuni weight for the entire season
-#                         total_mbuni_weight = MbuniWeight.objects.filter(
-#                             field__in=Field.objects.filter(farmer=farmer)
-#                         ).aggregate(Sum('weight'))['weight__sum'] or 0
-
-#                     # Calculate total weights for the selected harvest
-#                     farmer_fields = Field.objects.filter(farmer=farmer)
-#                     cherry_weight_sum = CherryWeight.objects.filter(
-#                         field__in=farmer_fields
-#                     ).aggregate(Sum('weight'))['weight__sum'] or 0
-#                     mbuni_weight_sum = MbuniWeight.objects.filter(
-#                         field__in=farmer_fields
-#                     ).aggregate(Sum('weight'))['weight__sum'] or 0
-#                     total_coffee_weight = cherry_weight_sum + mbuni_weight_sum
-
-#                     farmer.total_coffee_weight = total_coffee_weight
-#                     farmer.save()
-
-#                     # Prepare SMS message
-#                     current_datetime = datetime.now()
-#                     formatted_datetime = current_datetime.strftime('%Y-%m-%d %H:%M')
-#                     sms_message = (
-#                         f"Dear {farmer.name}, on {formatted_datetime} you weighed {weight} kgs of {berry_type} coffee. "
-#                     )
-#                     if berry_type == 'cherry':
-#                         sms_message += f"Your total cherry coffee weight for the season is {total_cherry_weight} kgs."
-#                     elif berry_type == 'mbuni':
-#                         sms_message += f"Your total mbuni coffee weight for the season is {total_mbuni_weight} kgs."
-                    
-#                     try:
-#                         send_sms(sms_message, [phone_number])
-#                     except Exception as e:
-#                         logger.error(f"Error sending SMS: {e}")
-#                         messages.error(request, f'Error sending SMS: {e}')
-
-#                     # Print receipt
-#                     content = (
-#                         "========================================\n"
-#                         "OLMISMIS FCS Ltd\n"
-#                         "========================================\n"
-#                         f"Date: {current_datetime.date()}\n"
-#                         f"Time: {current_datetime.strftime('%H:%M')}\n"
-#                         "========================================\n"
-#                         f"Farmer Name: {farmer.name}\n"
-#                         f"Farmer number: {farmer.number}\n"
-#                         f"Weight of the Day: {weight} kgs\n"
-#                         f"Total Cherry Coffee Weight for the Season: {total_cherry_weight} kgs\n"
-#                         f"Served by: {request.user.username}\n"
-#                         "========================================\n\n\n"
-#                     )
-
-#                     # Use escpos to print the receipt
-#                     printer = Usb(0x04b8, 0x0e15)  # Replace with your printer's Vendor ID and Product ID
-#                     printer.text(content)
-#                     printer.cut()
-
-#                     messages.success(request, 'Coffee berries weight updated successfully.')
-#                     return redirect('cashier-dashboard')
-#                 except Exception as e:
-#                     logger.error(f"Error updating coffee berries: {e}")
-#                     messages.error(request, f'Error updating coffee berries: {e}')
-#             else:
-#                 messages.error(request, 'Farmer not found. Please enter a valid farmer number.')
-#     else:
-#         form = CoffeeBerriesForm()
-
-#     return render(request, 'admin/admin_dashboard.html', {
-#         'form': form,
-#         'selected_harvest': selected_harvest  # Pass the selected harvest to the template
-#     })
-
+"""hii sijui ni gani wacha tutest hii hapa juuh
+"""
 @csrf_protect
 def cashier_dashboard(request):
     # Retrieve the selected harvest from the session
@@ -424,9 +307,9 @@ def cashier_dashboard(request):
                             cherry_weight.save()
                         
                         # Calculate total cherry weight for the entire season
-                        total_cherry_weight = CherryWeight.objects.filter(
+                        total_cherry_weight = round(CherryWeight.objects.filter(
                             field__in=Field.objects.filter(farmer=farmer)
-                        ).aggregate(Sum('weight'))['weight__sum'] or 0
+                        ).aggregate(Sum('weight'))['weight__sum'] or 0, 1)
                     
                     elif berry_type == 'mbuni':
                         mbuni_weight, created = MbuniWeight.objects.get_or_create(
@@ -439,9 +322,10 @@ def cashier_dashboard(request):
                             mbuni_weight.save()
                         
                         # Calculate total mbuni weight for the entire season
-                        total_mbuni_weight = MbuniWeight.objects.filter(
+                        total_mbuni_weight = round(MbuniWeight.objects.filter(
                             field__in=Field.objects.filter(farmer=farmer)
-                        ).aggregate(Sum('weight'))['weight__sum'] or 0
+                        ).aggregate(Sum('weight'))['weight__sum'] or 0, 1)
+
                     
                     # Calculate total weights for the selected harvest
                     farmer_fields = Field.objects.filter(farmer=farmer)
@@ -909,3 +793,34 @@ def process_payments(request, selected_harvest_id):
         })
 
     return render(request, 'admin/payment_form.html', {'selected_harvest': selected_harvest})
+
+
+def cashier_edit_weight(request):
+    # Retrieve the selected harvest from the session
+    selected_harvest_id = request.session.get('selected_harvest_id')
+    selected_harvest = Harvest.objects.filter(pk=selected_harvest_id).first() if selected_harvest_id else None
+
+    if request.method == 'POST':
+        edit_form = CashierEditForm(request.POST, selected_harvest_id=selected_harvest_id)  # Pass the harvest ID
+        if edit_form.is_valid():
+            # Create an EditRequest instead of directly updating the weight
+            edit_request = EditRequest(
+                farmer=edit_form.cleaned_data['farmer'],
+                berry_type=edit_form.cleaned_data['berry_type'],
+                current_weight=edit_form.cleaned_data['current_weight'],
+                new_weight=edit_form.cleaned_data['new_weight'],
+                harvest=selected_harvest,
+                cashier=request.user  # Assuming the cashier is logged in
+            )
+            edit_request.save()
+
+            messages.success(request, 'Edit request submitted successfully.')
+            return redirect('cashier-dashboard')
+
+    else:
+        edit_form = CashierEditForm(selected_harvest_id=selected_harvest_id)  # Pass the harvest ID
+
+    return render(request, 'edit_weight.html', {
+        'edit_form': edit_form,
+        'selected_harvest': selected_harvest
+    })
