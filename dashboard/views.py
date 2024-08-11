@@ -626,15 +626,13 @@ def delete_season(request, pk):
         messages.error(request, 'Season not found.')
     return redirect('manage_harvests')
 
-def delete_harvest(request, harvest_id):
-    if request.method == 'POST':
-        harvest_id = request.POST.get('harvest_id')
-        try:
-            harvest = Harvest.objects.get(pk=harvest_id)
-            harvest.delete()
-            messages.success(request, 'Harvest deleted successfully.')
-        except Harvest.DoesNotExist:
-            messages.error(request, 'Harvest not found.')
+def delete_harvest(request, pk):
+    try:
+        harvest = Harvest.objects.get(pk=pk)
+        harvest.delete()
+        messages.success(request, 'Harvest deleted successfully.')
+    except Harvest.DoesNotExist:
+        messages.error(request, 'Harvest not found.')
     return redirect('manage_harvests')
 
 from .models import Payment

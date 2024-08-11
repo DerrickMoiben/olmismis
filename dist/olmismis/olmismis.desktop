@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=OLMISMIS Application
+Exec=/home/kim/olmismis-1/dist/olmismis/run_olmismis.sh
+Type=Application
+Terminal=false
+
