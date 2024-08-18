@@ -19,7 +19,7 @@ class LoginForm(forms.Form):
 class FarmerForm(forms.ModelForm):
     AGREEMENT_CHOICES = [
         ('None', 'None'),
-        ('Kapkures  AGC', 'Kapkures AGC'),
+        ('Kapkures AGC', 'Kapkures AGC'),
         ('Blue Hills AGC', 'Blue Hills AGC'),
     ]
     

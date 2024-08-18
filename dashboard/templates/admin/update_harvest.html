@@ -1,19 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-color: #e0f7e0; color: #2e7d32;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Harvest</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #388e3c;
+            text-align: center;
+        }
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            color: #388e3c;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Update Harvest: {{ harvest.name }}</h1>
+    <div class="container">
+        <h1>Update Harvest: {{ harvest.name }}</h1>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Update Harvest</button>
-    </form>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Update Harvest</button>
+        </form>
 
-    <a href="{% url 'manage_harvests' %}">back</a>
+        <a href="{% url 'manage_harvests' %}">Back</a>
+    </div>
 </body>
 </html>

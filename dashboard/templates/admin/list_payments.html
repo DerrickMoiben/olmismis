@@ -1,0 +1,46 @@
+<!-- templates/list_payments.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Payments</title>
+</head>
+<body>
+    <h1>All Payments</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Farmer</th>
+                <th>Harvest</th>
+                <th>Church</th>
+                <th>Berries Type</th>
+                <th>Amount</th>
+                <th>Amount Received</th>
+                <th>Price per Kilo</th>
+                <th>Date Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.id }}</td>
+                    <td>{{ payment.farmer.name }}</td>
+                    <td>{{ payment.harvest.name }}</td>
+                    <td>{{ payment.church }}</td>
+                    <td>{{ payment.berry_type }}</td>
+                    <td>{{ payment.amount }}</td>
+                    <td>{{ payment.amount_received }}</td>
+                    <td>{{ payment.price_per_kilo }}</td>
+                    <td>{{ payment.created_at }}</td>
+                    <td>
+                        <a href="{% url 'delete_payment' payment.id %}" onclick="return confirm('Are you sure you want to delete this payment?');">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'delete_all_payments' %}" onclick="return confirm('Are you sure you want to delete all this  payments at once buddy');">Delete all payments</a>
+    
+</body>
+</html>

@@ -22,8 +22,6 @@ class FarmerEditForm(forms.ModelForm):
     ]
     
     agreement = forms.ChoiceField(choices=AGREEMENT_CHOICES, required=True)
-    cherry_weight = forms.FloatField(required=False)
-    mbuni_weight = forms.FloatField(required=False)
 
     class Meta:
         model = Farmer

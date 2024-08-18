@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,100 +8,109 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f9f9f9;
             margin: 0;
             padding: 20px;
+            color: #333;
+            line-height: 1.6;
         }
+
         h1 {
             text-align: center;
-            color: #333;
+            margin-bottom: 20px;
+            color: #4A4A4A;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
-        th, td {
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
-            border-right: 1px solid #ddd; /* Vertical lines */
         }
+
         th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        td:last-child, th:last-child {
-            border-right: none; /* Remove right border for last column */
-        }
-        tfoot {
-            background-color: #f9f9f9;
+            background-color: #f0f0f0;
+            color: #333;
             font-weight: bold;
         }
-        a {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            text-align: center;
-            padding: 10px;
-            background-color: #4CAF50;
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        h3 {
+            margin-top: 10px;
+            color: #007BFF;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #28a745;
             color: white;
             text-decoration: none;
             border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
         }
-        a:hover {
-            background-color: #45a049;
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .summary-section {
+            margin-top: 20px;
+            text-align: center;
         }
     </style>
 </head>
+
 <body>
-    <h1>Payment Summary for {{ selected_harvest.name }}</h1>
+    <h1>Payment Summary</h1>
+
     <table>
         <thead>
             <tr>
                 <th>Farmer Number</th>
                 <th>Farmer Name</th>
-                <th>Kapkures AGC Deduction</th>
-                <th>Blue Hills AGC Deduction</th>
+                <th>Kapkures Deduction</th>
+                <th>Blue Hills Deduction</th>
                 <th>Net Payment</th>
             </tr>
         </thead>
         <tbody>
             {% for payment in payment_summary %}
-                <tr>
-                    <td>{{ payment.farmer_number }}</td>
-                    <td>{{ payment.farmer_name }}</td>
-                    <td>
-                        {% if payment.kapkures_deduction > 0 %}
-                            {{ payment.kapkures_deduction }}
-                        {% else %}
-                            None
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if payment.blue_hills_deduction > 0 %}
-                            {{ payment.blue_hills_deduction }}
-                        {% else %}
-                            None
-                        {% endif %}
-                    </td>
-                    <td>{{ payment.net_payment }}</td>
-                </tr>
+            <tr>
+                <td>{{ payment.farmer_number }}</td>
+                <td>{{ payment.farmer_name }}</td>
+                <td>{{ payment.kapkures_deduction|floatformat:2 }}</td>
+                <td>{{ payment.blue_hills_deduction|floatformat:2 }}</td>
+                <td>{{ payment.net_payment|floatformat:2 }}</td>
+            </tr>
             {% endfor %}
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2">Total:</td>
-                <td>{{ total_kapkures_deduction }}</td>
-                <td>{{ total_blue_hills_deduction }}</td>
-                <td>{{ total_net_payment }}</td>
-            </tr>
-        </tfoot>
     </table>
-    <a href="{% url 'select_harvest' %}">Process Another Payment</a>
+
+    <div class="summary-section">
+        <h3>Total Kapkures 10%: {{ total_kapkures_deduction|floatformat:2 }}</h3>
+        <h3>Total Blue Hills 10%: {{ total_blue_hills_deduction|floatformat:2 }}</h3>
+        <h3>Total Net Payment: {{ total_net_payment|floatformat:2 }}</h3>
+    </div>
+
+    <div class="summary-section">
+        <a href="{% url 'print_payment_summary' %}" class="btn">Print Summary</a>
+    </div>
 </body>
+
 </html>

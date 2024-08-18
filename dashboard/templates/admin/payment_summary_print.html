@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        @media print {
+            button {
+                display: none;
+            }
+        }
+        .signature-row td {
+            border: none;
+            text-align: left;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .final-signature-table {
+            margin-top: 40px;
+        }
+        .final-signature-table th, .final-signature-table td {
+            border: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .final-signature-table th {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <h1>Payment Summary</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Farmer Number</th>
+                <th>Farmer Name</th>
+                <th>Kapkures Deduction</th>
+                <th>Blue Hills Deduction</th>
+                <th>Net Payment</th>
+                <th>Farmer's Signature</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payment_summary %}
+            <tr>
+                <td>{{ payment.farmer_number }}</td>
+                <td>{{ payment.farmer_name }}</td>
+                <td>{{ payment.kapkures_deduction }}</td>
+                <td>{{ payment.blue_hills_deduction }}</td>
+                <td>{{ payment.net_payment }}</td>
+                <td>_______________________</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h3>Total Kapkures Deduction: {{ total_kapkures_deduction }}</h3>
+    <h3>Total Blue Hills Deduction: {{ total_blue_hills_deduction }}</h3>
+    <h3>Total Net Payment: {{ total_net_payment }}</h3>
+
+    <!-- Final Signature Table -->
+    <table class="final-signature-table">
+        <tr>
+            <th>Chairman's Signature</th>
+            <th>Treasurer's Signature</th>
+            <th>Secretary's Signature</th>
+            <th>Date</th>
+        </tr>
+        <tr>
+            <td>_______________________</td>
+            <td>_______________________</td>
+            <td>_______________________</td>
+            <td>_______________________</td>
+        </tr>
+    </table>
+
+    <button onclick="window.print()">Print Summary</button>
+</body>
+</html>

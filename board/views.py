@@ -12,9 +12,11 @@ from django.db.models import Sum, F
 from django.contrib.auth.decorators import login_required
 from apis.sms import send_sms
 from escpos.printer import Usb
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from django.http import JsonResponse
 from django.urls import reverse
+from dashboard.models import Season, Field
+from django.db.models import Sum, Q
 
 logger = logging.getLogger(__name__)
 
@@ -94,64 +96,6 @@ def admin_dashboard(request):
     }
     return render(request, 'indexboard.html', context)
 
-# @login_required
-# @csrf_protect
-# def all_farmers(request):
-#     search_farmer = request.GET.get('search', '')
-#     if search_farmer:
-#         farmers = Farmer.objects.filter(name__icontains=search_farmer)
-#     else:
-#         farmers = Farmer.objects.all()
-
-#     total_cherry_weight = 0
-#     total_mbuni_weight = 0
-
-#     for farmer in farmers:
-#         farmer_fields = farmer.field_set.all()
-#         farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-#         farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-#         farmer.total_cherry_weight = farmer_cherry_weight
-#         farmer.total_mbuni_weight = farmer_mbuni_weight
-#         total_cherry_weight += farmer_cherry_weight
-#         total_mbuni_weight += farmer_mbuni_weight
-
-#     context = {
-#         'farmers': farmers,
-#         'total_cherry_weight': total_cherry_weight,
-#         'total_mbuni_weight': total_mbuni_weight,
-#         'search_query': search_farmer,
-#     }
-#     return render(request, 'all_farmers.html', context)
-
-
-@login_required
-@csrf_protect
-def all_farmers(request):
-    search_farmer = request.GET.get('search', '')
-    if search_farmer:
-        farmers = Farmer.objects.filter(name__icontains=search_farmer)
-    else:
-        farmers = Farmer.objects.all().order_by('number')  # Sort by number
-
-    total_cherry_weight = 0
-    total_mbuni_weight = 0
-
-    for farmer in farmers:
-        farmer_fields = farmer.field_set.all()
-        farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-        farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-        farmer.total_cherry_weight = farmer_cherry_weight
-        farmer.total_mbuni_weight = farmer_mbuni_weight
-        total_cherry_weight += farmer_cherry_weight
-        total_mbuni_weight += farmer_mbuni_weight
-
-    context = {
-        'farmers': farmers,
-        'total_cherry_weight': total_cherry_weight,
-        'total_mbuni_weight': total_mbuni_weight,
-        'search_query': search_farmer,
-    }
-    return render(request, 'all_farmers.html', context)
 
 
 
@@ -166,68 +110,7 @@ def delete_farmer(request, farmer_id):
 
 
 
-@login_required
-@csrf_protect
-def print_farmer_report(request):
-    try:
-        farmers = Farmer.objects.all()
-        total_cherry_weight = 0
-        total_mbuni_weight = 0
 
-        for farmer in farmers:
-            farmer_fields = farmer.field_set.all()
-            farmer_cherry_weight = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-            farmer_mbuni_weight = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
-            farmer.total_cherry_weight = farmer_cherry_weight
-            farmer.total_mbuni_weight = farmer_mbuni_weight
-            total_cherry_weight += farmer_cherry_weight
-            total_mbuni_weight += farmer_mbuni_weight
-
-        # Prepare context for rendering
-        context = {
-            'farmers': farmers,
-            'total_cherry_weight': total_cherry_weight,
-            'total_mbuni_weight': total_mbuni_weight,
-        }
-
-        # Set up the ESC/POS printer (adjust parameters according to your printer's setup)
-        printer = Usb(0x04b8, 0x0202)  # Replace with your printer's vendor and product ID
-
-        # Construct the content to be printed
-        content = (
-            "========================================\n"
-            "OLMISMIS FCS Ltd\n"
-            "========================================\n"
-            "Farmers Report\n"
-            "========================================\n"
-        )
-        for farmer in farmers:
-            content += (
-                f"Farmer Name: {farmer.name}\n"
-                f"Farmer Number: {farmer.number}\n"
-                f"Total Cherry Weight: {farmer.total_cherry_weight} kgs\n"
-                f"Total Mbuni Weight: {farmer.total_mbuni_weight} kgs\n"
-                "========================================\n"
-            )
-        content += (
-            f"Total Cherry Weight: {total_cherry_weight} kgs\n"
-            f"Total Mbuni Weight: {total_mbuni_weight} kgs\n"
-            "========================================\n\n\n"
-        )
-
-        try:
-            # Print content
-            printer.text(content)
-            printer.cut()
-            messages.success(request, 'Report printed successfully.')
-
-        except Exception as e:
-            messages.error(request, f'Error printing report: {e}')
-
-    except Exception as e:
-        messages.error(request, f'Error fetching data: {e}')
-
-    return render(request, 'all_farmers.html', context)
 
 
 # @login_required
@@ -276,28 +159,6 @@ def edit_farmer(request, farmer_id):
                 edited_farmer.save()
                 messages.success(request, 'Farmer details updated successfully.')
 
-            # Handle cherry and mbuni weights
-            field = farmer.field_set.first()
-            if field:
-                # Update or create cherry weight
-                cherry_weight, created = CherryWeight.objects.get_or_create(field=field)
-                cherry_weight_weight = form.cleaned_data.get('cherry_weight')
-                if cherry_weight_weight is not None:  # Ensure weight is provided
-                    cherry_weight.weight = cherry_weight_weight
-                else:
-                    cherry_weight.weight = 0  # Or handle it as per your requirement
-                cherry_weight.save()
-
-                # Update or create mbuni weight
-                mbuni_weight, created = MbuniWeight.objects.get_or_create(field=field)
-                mbuni_weight_weight = form.cleaned_data.get('mbuni_weight')
-                if mbuni_weight_weight is not None:  # Ensure weight is provided
-                    mbuni_weight.weight = mbuni_weight_weight
-                else:
-                    mbuni_weight.weight = 0  # Or handle it as per your requirement
-                mbuni_weight.save()
-
-                messages.success(request, 'Farmer details and weights updated successfully.')
                 return redirect('edit_farmer', farmer_id=farmer.id)
         else:
             messages.error(request, 'Failed to update farmer details. Please correct the errors below.')
@@ -385,3 +246,92 @@ def add_farmer_with_number(request):
         'form': form,
     }
     return render(request, 'addfarmer.html', context)
+
+
+
+from django.db.models import Sum, Q
+
+@login_required
+@csrf_protect
+def all_farmers(request):
+    today = date.today()
+
+    # Get active seasons
+    active_seasons = Season.objects.filter(
+        Q(start_date__lte=today) & (Q(end_date__gte=today) | Q(end_date__isnull=True))
+    )
+
+    # Get all farmers
+    all_farmers = Farmer.objects.all().order_by('number')
+
+    total_cherry_weight = 0
+    total_mbuni_weight = 0
+
+    for farmer in all_farmers:
+        # Get all fields associated with the active season's harvests for this farmer
+        farmer_fields = Field.objects.filter(farmer=farmer, harvest__season__in=active_seasons)
+
+        # Aggregate cherry and mbuni weights for these fields
+        cherry_weight_sum = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        mbuni_weight_sum = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+
+        # Assign the weights to the farmer object
+        farmer.total_cherry_weight = round(cherry_weight_sum, 1)
+        farmer.total_mbuni_weight = round(mbuni_weight_sum, 1)
+
+        # Update total weights for all farmers
+        total_cherry_weight += cherry_weight_sum
+        total_mbuni_weight += mbuni_weight_sum
+
+    context = {
+        'farmers': all_farmers,
+        'total_cherry_weight': total_cherry_weight,
+        'total_mbuni_weight': total_mbuni_weight,
+    }
+    
+    return render(request, 'all_farmers.html', context)
+
+
+
+from django.db.models import Sum
+from django.shortcuts import render
+from django.utils import timezone
+
+@login_required
+@csrf_protect
+def print_farmer_report(request):
+    today = timezone.now().date()
+
+    # Fetch the active season
+    active_seasons = Season.objects.filter(
+        Q(start_date__lte=today) & (Q(end_date__gte=today) | Q(end_date__isnull=True))
+    )
+
+    # Get all farmers
+    all_farmers = Farmer.objects.all().order_by('number')
+
+    total_cherry_weight = 0
+    total_mbuni_weight = 0
+
+    for farmer in all_farmers:
+        farmer_fields = Field.objects.filter(farmer=farmer, harvest__season__in=active_seasons)
+        
+        cherry_weight_sum = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        mbuni_weight_sum = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        
+        farmer.total_cherry_weight = round(cherry_weight_sum, 1)
+        farmer.total_mbuni_weight = round(mbuni_weight_sum, 1)
+        farmer.agreement = farmer.agreement  # Assuming agreement is a field in the Farmer model
+        
+        # Add to totals
+        total_cherry_weight += farmer.total_cherry_weight
+        total_mbuni_weight += farmer.total_mbuni_weight
+
+    context = {
+        'farmers': all_farmers,
+        'date': today,
+        'total_cherry_weight': round(total_cherry_weight, 2),
+        'total_mbuni_weight': round(total_mbuni_weight, 2),
+    }
+
+    return render(request, 'print_farmer_report.html', context)

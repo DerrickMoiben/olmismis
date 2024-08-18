@@ -19,10 +19,10 @@
     <h1>Olmismis</h1>
     <ul>
       <li><a href="{% url 'land_page' %}">Home</a></li>
-      <li><a href="{% url 'all-farmers' %}">Farmers</a></li>
+      <li><a href="{% url 'all-farmers' %}">Farmers Report</a></li>
       <li><a href="{% url 'admin_edit_requests' %}">Approve edit</a></li>
-      <li><a href="{% url 'print-farmer-report' %}">Reports</a></li>
-      <li><a href="{% url 'manage_harvests' %}">Season Summary</a></li>
+      <li><a href="{% url 'print-farmer-report' %}"> Print Reports</a></li>
+      <li><a href="{% url 'manage_harvests' %}">Update Harvest</a></li>
       <li><a href="{% url 'create_season' %}">Create Season</a></li>
       <li><a href="{% url 'create_harvest' %}">Create Harvest</a></li>
       <li><a href="{% url 'select_harvest_for_payment' %}">Make Payment</a></li>
@@ -104,7 +104,9 @@
           <div class="widget">
             <h3>Total Farmers</h3>
             <p>Total Farmers: {{ total_farmers }}</p>
-            <p>Total Coffee Weight: {{ total_coffee_weight }}</p>
+            <!-- <p>Total Coffee Weight: {{ total_cherry_weight }} Kg</p>
+            <P>Total mbuni weight: {{ total_mbuni_weight }}  Kg</P>
+            <p>{{ total_cherry_weight }}</p> -->
           </div>
         </div>
       </section>
