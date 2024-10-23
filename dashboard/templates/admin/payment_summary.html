@@ -102,5 +102,8 @@
         </tfoot>
     </table>
     <a href="{% url 'select_harvest' %}">Process Another Payment</a>
+    <a href="{% url 'print_payment_report' selected_harvest.id %}" class="btn btn-primary">Print Payment Report</a>
+
+
 </body>
 </html>

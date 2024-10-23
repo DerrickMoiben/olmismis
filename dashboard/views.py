@@ -841,3 +841,62 @@ def cashier_edit_weight(request):
         'edit_form': edit_form,
         'selected_harvest': selected_harvest
     })
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from escpos.printer import Usb
+
+def print_payment_report(request, selected_harvest_id):
+    try:
+        # Initialize the printer with the vendor and product ID for Epson L3250
+        printer = Usb(0x04b8, 0x118a)
+
+        # Fetch the selected harvest and payments
+        selected_harvest = get_object_or_404(Harvest, id=selected_harvest_id)
+        payments = Payment.objects.filter(harvest=selected_harvest)
+
+        total_kapkures_deduction = sum(payment.amount * 0.10 for payment in payments if payment.church == 'Kapkures AGC')
+        total_blue_hills_deduction = sum(payment.amount * 0.10 for payment in payments if payment.church == 'Blue Hills AGC')
+        total_net_payment = sum(payment.amount_received for payment in payments)
+
+        # Print header
+        printer.set(align='center', width=2, height=2)
+        printer.text(f"Payment Report\n")
+        printer.text(f"Harvest: {selected_harvest.name}\n")
+        printer.text(f"Date: {selected_harvest.created_at.strftime('%d %b %Y')}\n")
+        printer.text("\n")
+
+        # Print table headers
+        printer.set(align='left', width=1, height=1)
+        printer.text(f"{'Farmer No.':<10}{'Name':<20}{'Kapkures':<10}{'Blue Hills':<10}{'Net Pay':<10}\n")
+        printer.text("-" * 50 + "\n")
+
+        # Print each payment record
+        for payment in payments:
+            kapkures_deduction = payment.amount * 0.10 if payment.church == 'Kapkures AGC' else 0
+            blue_hills_deduction = payment.amount * 0.10 if payment.church == 'Blue Hills AGC' else 0
+            printer.text(f"{payment.farmer.number:<10}{payment.farmer.name:<20}{kapkures_deduction:<10.2f}{blue_hills_deduction:<10.2f}{payment.amount_received:<10.2f}\n")
+
+        # Print totals
+        printer.text("-" * 50 + "\n")
+        printer.text(f"Total Kapkures Deduction: {total_kapkures_deduction:.2f}\n")
+        printer.text(f"Total Blue Hills Deduction: {total_blue_hills_deduction:.2f}\n")
+        printer.text(f"Total Net Payment: {total_net_payment:.2f}\n")
+
+        # Cut the paper
+        printer.cut()
+
+        # Close the printer connection
+        printer.close()
+
+        messages.success(request, 'Report printed successfully.')
+
+        # Redirect back to the payment summary page
+        return redirect('process_payments', selected_harvest_id=selected_harvest_id)
+
+    except Exception as e:
+        messages.error(request, f'Failed to print the report: {str(e)}')
+
+        # If there's an error, redirect to the previous page or an error page
+        return redirect('select_harvest_for_payment')

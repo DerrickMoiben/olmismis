@@ -1,6 +1,10 @@
 from escpos.printer import Usb
 
-printer = Usb(0x0fe6, 0x811e, in_ep=0x82, out_ep=0x01)
+# Initialize the printer with the correct Vendor ID and Product ID for Epson L3250
+printer = Usb(0x04b8, 0x0202)
 
-printer.set(align='center', font='b', text_type='normal', width=2, height=2)
-printer.cut()
+# Test printing a simple text with formatting
+printer.set(align='center', width=2, height=2)  # Removed 'text_type'
+printer.text("Test Print\n")
+printer.text("Epson L3250\n")
+printer.cut()  # Cut the paper

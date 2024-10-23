@@ -1,0 +1,33 @@
+
+{% block content %}
+<h1>Payment Report</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Farmer Name</th>
+            <th>Amount Received</th>
+            <th>Church</th>
+            <th>Berry Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.farmer.name }}</td>
+            <td>{{ payment.amount_received }} KES</td>
+            <td>{{ payment.church }}</td>
+            <td>{{ payment.berry_type }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3">Total Payments:</td>
+            <td>{{ total_payments }} KES</td>
+        </tr>
+    </tfoot>
+</table>
+
+<a href="{% url 'print_payment_report' %}" class="btn btn-primary">Print Report</a>
+{% endblock %}
