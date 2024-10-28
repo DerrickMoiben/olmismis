@@ -8,7 +8,6 @@ urlpatterns = [
     path('cashier-dashboard/', views.cashier_dashboard, name='cashier-dashboard'),
     path('register-new-farmer/', views.register_new_farmer, name='register-new-farmer'),
     path('cashier-farmers/', views.cashier_farmers, name='cashier-farmers'),
-    #path('enter-weight/<int:farmer_id>/', views.enter_weight, name='enter-weight'),
     path('announcements/', views.announcements, name='announcements'),
     path('print-farmers-report/', views.print_farmers_report, name='print-farmers-report'),
     path('create_harvest/', views.create_harvest, name='create_harvest'),

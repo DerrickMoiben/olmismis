@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from .forms import AnnouncementsForm, HarvestForm, SeasonForm, SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm, CashierEditForm
-from .models import Farmer, Field, CherryWeight, Harvest, MbuniWeight, NewPayment, Payment, Season
+from .models import Farmer, Field, CherryWeight, Harvest, MbuniWeight, NewPayment, Season
 import logging
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
