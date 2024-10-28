@@ -20,10 +20,6 @@ urlpatterns = [
     path('update_season/<int:season_id>/', views.update_season, name='update_season'),
     path('select_harvest_for_payment/', views.select_harvest_for_payment, name='select_harvest_for_payment'),  # URL for selecting harvest
     path('process-payments/<int:selected_harvest_id>/', views.process_payments, name='process_payments'),  # URL for processing payments
-    path('cashier_edit_weight/', views.cashier_edit_weight, name='cashier_edit_weight'),  # URL for editing weig
-    path('list_payments/', views.list_payments, name='list_payments'),
-    path('delete_payment/<int:payment_id>/', views.delete_payment, name='delete_payment'),
-    path('delete_all_payments/', views.delete_all_payments, name='delete_all_payments'),
-    path('print-payment-report/<str:payment_number>/', views.print_payment_report, name='print_payment_report'),
+    path('cashier_edit_weight/', views.cashier_edit_weight, name='cashier_edit_weight'),  # URL for editing weigth
     path('print-payment-summary/', views.print_payment_summary, name='print_payment_summary'),
 ]
