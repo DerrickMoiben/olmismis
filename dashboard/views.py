@@ -1,5 +1,4 @@
 
-from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from .forms import AnnouncementsForm, HarvestForm, SeasonForm, SignupForm, LoginForm,  FarmerForm, CoffeeBerriesForm, CashierEditForm
@@ -8,16 +7,12 @@ import logging
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.db.models import Sum
-from datetime import date, datetime, time
-from escpos.printer import Usb
-import json
-from django.conf import settings
+from datetime import date, datetime
+from escpos.printer import Usb # type: ignore
 from apis.sms import send_sms
-from django.utils.timezone import now
 from django.db.models import Q
 from datetime import datetime
-import win32print
-import win32api
+# import win32print # type: ignore
 from board.models import  EditRequest
 
 logger = logging.getLogger(__name__)
@@ -856,10 +851,10 @@ def delete_all_payments(request):
     return redirect('list_payments')
 
 
+"""Hii  iko na win32 kaaa ku print tu natoa alfu tutarudisha badae njo tufanye edditng to teh fullest ikue project moja moto"""
+
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
-import win32print
-import win32ui
 from .models import Payment
 
 def print_payment_report(request, payment_number):

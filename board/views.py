@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.db.models import Sum, F
 from django.contrib.auth.decorators import login_required
 from apis.sms import send_sms
-from escpos.printer import Usb
+from escpos.printer import Usb # type: ignore
 from datetime import date, datetime, timedelta
 from django.http import JsonResponse
 from django.urls import reverse
@@ -110,27 +110,6 @@ def delete_farmer(request, farmer_id):
 
 
 
-
-
-
-# @login_required
-# @csrf_protect
-# def edit_farmer(request, farmer_id):
-#     farmer = get_object_or_404(Farmer, id=farmer_id)
-
-#     if request.method == 'POST':
-#         form = FarmerEditForm(request.POST, instance=farmer)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, 'Farmer details updated successfully.')
-#     else:
-#         form = FarmerEditForm(instance=farmer)
-
-#     context = {
-#         'form': form,
-#         'farmer': farmer,
-#     }
-#     return render(request, 'edit_farmers.html', context)
 
 @login_required
 @csrf_protect
