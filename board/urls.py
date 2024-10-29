@@ -1,5 +1,6 @@
 from . import views
 from django.urls import path
+from .views import TopFarmerView
 
 urlpatterns = [
     path('singp/', views.singup, name='singup'),
@@ -13,4 +14,6 @@ urlpatterns = [
     path('admin/edit-requests/', views.admin_edit_requests, name='admin_edit_requests'),
     path('admin/approve-request/<int:request_id>/', views.approve_edit_request, name='approve_edit_request'),
     path('admin/reject-request/<int:request_id>/', views.reject_edit_request, name='reject_edit_request'),
+    path('top-farmers/', views.top_farmers, name='top-farmers'),
+    path('top-farmers-api/', TopFarmerView.as_view(), name='top-farmers-api'),
 ]

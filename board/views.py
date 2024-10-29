@@ -314,3 +314,80 @@ def print_farmer_report(request):
     }
 
     return render(request, 'print_farmer_report.html', context)
+
+
+def top_farmers(request):
+    active_seasons = Season.objects.filter(
+        Q(start_date__lte=date.today()) & (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+    )
+
+    # Get all farmers
+    all_farmers = Farmer.objects.all().order_by('number')
+
+    # Get the top 10 farmers by cherry weight
+    top_cherry_farmers = []
+    top_mbuni_farmers = []
+
+    for farmer in all_farmers:
+        farmer_fields = Field.objects.filter(farmer=farmer, harvest__season__in=active_seasons)
+        
+        cherry_weight_sum = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        mbuni_weight_sum = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+        
+        farmer.total_cherry_weight = round(cherry_weight_sum, 1)
+        farmer.total_mbuni_weight = round(mbuni_weight_sum, 1)
+
+        top_cherry_farmers.append(farmer)
+        top_mbuni_farmers.append(farmer)
+
+    top_cherry_farmers.sort(key=lambda x: x.total_cherry_weight, reverse=True)
+    top_mbuni_farmers.sort(key=lambda x: x.total_mbuni_weight, reverse=True)
+    
+    context = {
+        'all_farmers': all_farmers,
+        'top_cherry_farmers': top_cherry_farmers[:10],
+        'top_mbuni_farmers': top_mbuni_farmers[:10],
+    }
+
+    return render(request, 'top_farmers.html', context)
+
+from rest_framework.views import APIView
+from .serializers import TopFarmerSerializer
+from rest_framework.response import Response
+
+
+"""Api for getting the top 10 farmers"""
+class TopFarmerView(APIView):
+    def get(self, request):
+        active_seasons = Season.objects.filter(
+            Q(start_date__lte=date.today()) & (Q(end_date__gte=date.today()) | Q(end_date__isnull=True))
+        )
+
+        # Get all farmers
+        all_farmers = Farmer.objects.all().order_by('number')
+
+        # Get the top 10 farmers by cherry weight
+        top_cherry_farmers = []
+        top_mbuni_farmers = []
+
+        for farmer in all_farmers:
+            farmer_fields = Field.objects.filter(farmer=farmer, harvest__season__in=active_seasons)
+            
+            cherry_weight_sum = CherryWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+            mbuni_weight_sum = MbuniWeight.objects.filter(field__in=farmer_fields).aggregate(Sum('weight'))['weight__sum'] or 0
+            
+            farmer.total_cherry_weight = round(cherry_weight_sum, 1)
+            farmer.total_mbuni_weight = round(mbuni_weight_sum, 1)
+
+            top_cherry_farmers.append(farmer)
+            top_mbuni_farmers.append(farmer)
+
+        top_cherry_farmers.sort(key=lambda x: x.total_cherry_weight, reverse=True)
+        top_mbuni_farmers.sort(key=lambda x: x.total_mbuni_weight, reverse=True)
+        
+        top_cherry_farmers = top_cherry_farmers[:10]
+        top_mbuni_farmers = top_mbuni_farmers[:10]
+
+        serializer = TopFarmerSerializer(top_cherry_farmers, many=True)
+        return Response(serializer.data)
+    

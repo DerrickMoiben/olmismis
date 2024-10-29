@@ -175,6 +175,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'olmismis.onrender.com']
 INSTALLED_APPS = [
     'dashboard',
     'board',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

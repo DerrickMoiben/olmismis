@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Farmers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        canvas {
+            max-width: 600px; /* Set a maximum width for larger charts */
+            height: 400px; /* Fixed height for better visibility */
+            margin: 20px auto; /* Centering the charts */
+            display: block; /* Ensuring block display for centering */
+        }
+        section {
+            text-align: center; /* Centering text in the section */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Top Farmers</h1>
+
+    <!-- Cherry Farmers Section -->
+    <section>
+        <h2>Top 10 Cherry Farmers</h2>
+        <canvas id="cherryChart" aria-label="Cherry Farmers Chart" role="img"></canvas>
+
+        <h2>Cherry Farmers Distribution</h2>
+        <canvas id="cherryPieChart" aria-label="Cherry Farmers Distribution Pie Chart" role="img"></canvas>
+    </section>
+
+    <!-- Mbuni Farmers Section -->
+    <section>
+        <h2>Top 10 Mbuni Farmers</h2>
+        <canvas id="mbuniChart" aria-label="Mbuni Farmers Chart" role="img"></canvas>
+
+        <h2>Mbuni Farmers Distribution</h2>
+        <canvas id="mbuniPieChart" aria-label="Mbuni Farmers Distribution Pie Chart" role="img"></canvas>
+    </section>
+
+    <script>
+        // Data for Cherry Farmers
+        const cherryFarmers = {
+            labels: [{% for farmer in top_cherry_farmers %}'{{ farmer.name }}',{% endfor %}],
+            datasets: [{
+                label: 'Total Cherry Weight',
+                data: [{% for farmer in top_cherry_farmers %}{{ farmer.total_cherry_weight }},{% endfor %}],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        // Data for Cherry Pie Chart
+        const cherryPieData = {
+            labels: [{% for farmer in top_cherry_farmers %}'{{ farmer.name }}',{% endfor %}],
+            datasets: [{
+                data: [{% for farmer in top_cherry_farmers %}{{ farmer.total_cherry_weight }},{% endfor %}],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(255, 205, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(201, 203, 207, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(75, 192, 192, 0.6)'
+                ]
+            }]
+        };
+
+        // Configurations for Cherry Charts
+        const cherryConfig = {
+            type: 'bar',
+            data: cherryFarmers,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Weight (kg)' // Y-axis title
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Farmers' // X-axis title
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+            }
+        };
+
+        const cherryPieConfig = {
+            type: 'pie',
+            data: cherryPieData,
+            options : { 
+              plugins : { 
+                  legend : { 
+                      position : "right"
+                  } 
+              } 
+          }
+        };
+
+        // Render Cherry Charts
+        new Chart(document.getElementById('cherryChart'), cherryConfig);
+        new Chart(document.getElementById('cherryPieChart'), cherryPieConfig);
+
+        
+         // Data for Mbuni Farmers
+         const mbuniFarmers = {
+             labels: [{% for farmer in top_mbuni_farmers %}'{{ farmer.name }}',{% endfor %}],
+             datasets: [{
+                 label: 'Total Mbuni Weight',
+                 data: [{% for farmer in top_mbuni_farmers %}{{ farmer.total_mbuni_weight }},{% endfor %}],
+                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                 borderColor: 'rgba(54, 162, 235, 1)',
+                 borderWidth: 1
+             }]
+         };
+
+         // Data for Mbuni Pie Chart
+         const mbuniPieData = {
+             labels: [{% for farmer in top_mbuni_farmers %}'{{ farmer.name }}',{% endfor %}],
+             datasets: [{
+                 data: [{% for farmer in top_mbuni_farmers %}{{ farmer.total_mbuni_weight }},{% endfor %}],
+                 backgroundColor: [
+                     'rgba(54, 162, 235, 0.6)',
+                     'rgba(255, 99, 132, 0.6)',
+                     'rgba(255, 159, 64, 0.6)',
+                     'rgba(75, 192, 192, 0.6)',
+                     'rgba(153 ,102 ,255 ,0.6)'
+                 ]
+             }]
+         };
+
+         // Configurations for Mbuni Charts
+         const mbuniConfig = {
+             type: 'bar',
+             data: mbuniFarmers,
+             options: {
+                 scales: {
+                     y: {
+                         beginAtZero: true,
+                         title: {
+                             display: true,
+                             text: 'Weight (kg)' // Y-axis title
+                         }
+                     },
+                     x: {
+                         title: {
+                             display: true,
+                             text: 'Farmers' // X-axis title
+                         }
+                     }
+                 },
+                 plugins: {
+                     legend: {
+                         position: 'top',
+                     },
+                 },
+             }
+         };
+
+         const mbuniPieConfig = {
+             type : "pie",
+             data : mbuniPieData,
+             options : { 
+                 plugins : { 
+                     legend : { 
+                         position : "right"
+                     } 
+                 } 
+             }
+         };
+
+         // Render Mbuni Charts
+         new Chart(document.getElementById('mbuniChart'), mbuniConfig);
+         new Chart(document.getElementById('mbuniPieChart'), mbuniPieConfig);
+    </script>
+</body>
+</html>
