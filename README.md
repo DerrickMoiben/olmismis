@@ -10,24 +10,27 @@ This project provides a web application that allows administrators to:
 - Record the weight of coffee berries for each farmer
 - View a dashboard with total coffee weights
 - Manage farmer records
+- Handle seasonal updates and harvest management
+- Process payments based on coffee weights
 
-The project leverages Django's robust framework to handle user authentication, form submissions, and database operations.
-
-## Live Demo
-
-You can access the live version of the project at [https://olmismis.onrender.com](https://olmismis.onrender.com).
+The project leverages Django's robust framework to handle user authentication, form submissions, and database operations using **SQLite**.
 
 ## Features
 
 - **User Authentication**: Signup, login, and logout functionality for administrators.
 - **Farmer Management**: Register new farmers, view all farmers, and delete farmer records.
 - **Coffee Berry Weight Management**: Record and view the weight of coffee berries for each farmer.
-- **Dashboard**: View a summary of all farmers and their total coffee berry weights.
+- **Dashboard for Cashiers**: 
+  - **Register Farmers**: Interface for cashiers to enter new farmer details.
+  - **Record Weights**: Functionality to log the weight of coffee berries for registered farmers.
+- **Season Management**: Track when seasons start and manage harvests.
+- **Payment Processing**: Calculate payments per kilo of coffee berries and process transactions.
+- **Messaging**: Send notifications using the African Talking API for weight adjustments and harvest updates.
 
 ## Technologies Used
 
 - **Backend**: Django
-- **Database**: Django's built-in SQLite
+- **Database**: SQLite (Django's built-in database)
 - **Frontend**: HTML, CSS (with Django templates)
 - **Deployment**: Render.com
 
@@ -71,22 +74,8 @@ Visit `http://127.0.0.1:8000` to view the application.
 - **forms.py**: Contains form definitions for user signup, login, and data entry.
 - **models.py**: Defines the database models for `Farmer`, `Field`, and `CoffeeBerries`.
 - **templates/**: HTML templates for rendering the web pages.
-
-## Deployment
-
-The project is deployed on Render.com. Follow these steps to deploy your own version:
-
-1. **Create a new web service on Render.com**.
-2. **Connect your repository**.
-3. **Specify the build and start commands**:
-    ```sh
-    # Build command
-    pip install -r requirements.txt
-    # Start command
-    gunicorn project_settings.wsgi:application
-    ```
-
-4. **Set up environment variables** as needed.
+- **dashboard/**: Contains functionalities for cashier operations, including registering farmers and recording weights.
+- **apis/**: Handles integration with the African Talking API for messaging.
 
 ## Usage
 
@@ -98,14 +87,19 @@ The project is deployed on Render.com. Follow these steps to deploy your own ver
 
 ### Farmer Management
 
-- **Register Farmer**: Enter details of a new farmer.
+- **Register Farmer**: Enter details of a new farmer through the cashier dashboard.
 - **View Farmers**: See a list of all registered farmers and their total coffee weights.
 - **Delete Farmer**: Remove a farmer from the database.
 
 ### Coffee Berry Weight Management
 
-- **Enter Weight**: Record the weight of coffee berries for a specific farmer.
-- **Dashboard**: View a summary of all farmers and their total coffee berry weights.
+- **Enter Weight**: Cashiers can record the weight of coffee berries for a specific farmer.
+- **Dashboard**: View a summary of all farmers and their total coffee berry weights, including seasonal updates and harvest management.
+- **Payment Processing**: Calculate payments based on the weight of coffee berries and process transactions.
+
+### Messaging
+
+- **Notifications**: Send messages to farmers regarding weight adjustments and harvest updates using the African Talking API.
 
 ## Contributing
 
